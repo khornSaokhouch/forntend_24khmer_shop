@@ -2,17 +2,24 @@ import axios from "axios";
 import { useAuthStore } from "@/store/authStore";
 
 const api = axios.create({
-  baseURL: import.meta.env.backend_url || "http://localhost:3000/api",
+  baseURL: import.meta.env.BACKEND_URL || "http://localhost:3000/api",
   timeout: 5000,
 });
 
 // Attach JWT token automatically
 api.interceptors.request.use((config) => {
-  const authStore = useAuthStore();
-  if (authStore?.token) {
-    config.headers.Authorization = `Bearer ${authStore.token}`;
+  try {
+    // Get the store inside the interceptor
+    const authStore = useAuthStore();
+    if (authStore?.token) {
+      config.headers.Authorization = `Bearer ${authStore.token}`;
+    }
+  } catch (err) {
+    console.warn("Auth store not ready yet", err);
   }
   return config;
+}, (error) => {
+  return Promise.reject(error);
 });
 
 export default api;
