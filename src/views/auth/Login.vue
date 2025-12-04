@@ -1,13 +1,15 @@
 <template>
   <div class="login-container">
-    <h1>Welcome to the Bot Web App</h1>
+    <h1>Login via Telegram OTP</h1>
 
     <div v-if="telegramUser">
       <p>Hello, {{ telegramUser.first_name }}!</p>
       <p>Your Telegram ID: {{ telegramUser.id }}</p>
 
-      <!-- Request OTP -->
-      <button @click="requestOtp">Send OTP</button>
+      <!-- Send OTP button -->
+      <button @click="requestOtp" :disabled="otpSent">
+        {{ otpSent ? "OTP Sent" : "Send OTP" }}
+      </button>
     </div>
 
     <div v-if="otpSent">
@@ -30,15 +32,16 @@ const otpSent = ref(false);
 const error = ref(null);
 
 onMounted(() => {
+  // Check if inside Telegram Web App
   if (window.Telegram?.WebApp) {
-    // Get Telegram user automatically
     telegramUser.value = window.Telegram.WebApp.initDataUnsafe.user;
-    console.log("Telegram User:", telegramUser.value);
+    console.log("Telegram user:", telegramUser.value);
   } else {
-    error.value = "This app must be opened inside Telegram.";
+    error.value = "Please open this page inside Telegram using the Bot.";
   }
 });
 
+// Request OTP via bot
 const requestOtp = async () => {
   if (!telegramUser.value) return;
   try {
@@ -49,6 +52,7 @@ const requestOtp = async () => {
   }
 };
 
+// Verify OTP
 const verifyOtpCode = async () => {
   if (!telegramUser.value) return;
   await auth.verifyOtp(telegramUser.value.id, otp.value);
