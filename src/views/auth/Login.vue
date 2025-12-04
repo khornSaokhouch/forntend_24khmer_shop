@@ -2,8 +2,15 @@
   <div>
     <h1>Login via Telegram OTP</h1>
 
-    <div id="telegram-login"></div>
+    <!-- Button to open Telegram login widget -->
+    <button v-if="!widgetLoaded" @click="showTelegramLogin">
+      Login with Telegram
+    </button>
 
+    <!-- Container for Telegram widget -->
+    <div v-show="widgetLoaded" id="telegram-login"></div>
+
+    <!-- OTP input -->
     <div v-if="otpSent">
       <input v-model="otp" placeholder="Enter OTP" />
       <button @click="verifyOtpCode">Verify OTP</button>
@@ -14,38 +21,46 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import { useAuthStore } from "@/store/authStore";
 
 const auth = useAuthStore();
 const otp = ref("");
 const otpSent = ref(false);
-let telegramId = null; // will be set from Telegram login
+const widgetLoaded = ref(false);
+let telegramId = null;
 
-onMounted(() => {
-  // Inject Telegram login widget
+// Function to inject Telegram widget when button is clicked
+const showTelegramLogin = () => {
   const script = document.createElement("script");
   script.src = "https://telegram.org/js/telegram-widget.js?7";
-  script.setAttribute("data-telegram-login", "YOUR_BOT_USERNAME"); // replace with your bot username
+  script.setAttribute("data-telegram-login", "@CyberPioneerBot"); // replace with your bot username
   script.setAttribute("data-size", "large");
   script.setAttribute("data-userpic", "false");
-  script.setAttribute("data-onauth", "onTelegramAuth(user)"); // callback
+  script.setAttribute("data-onauth", "onTelegramAuth(user)");
   script.async = true;
   document.getElementById("telegram-login").appendChild(script);
+  widgetLoaded.value = true;
 
   // Define global callback
   window.onTelegramAuth = async (user) => {
     telegramId = user.id;
-    await auth.sendOtp(telegramId); // request OTP automatically
+    console.log("Telegram user:", user);
+
+    // Send OTP after Telegram login
+    await auth.sendOtp(telegramId);
     if (!auth.error) otpSent.value = true;
   };
-});
+};
 
+// Verify OTP
 const verifyOtpCode = async () => {
+  if (!telegramId) return;
   await auth.verifyOtp(telegramId, otp.value);
+
   if (!auth.error) {
     alert(`Welcome ${auth.user.first_name}!`);
-    // Redirect or fetch user data
+    // Optionally redirect or fetch user data
   }
 };
 </script>
