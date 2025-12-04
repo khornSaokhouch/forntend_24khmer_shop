@@ -32,6 +32,7 @@ export const useAuthStore = defineStore("auth", {
 
         sessionStorage.setItem("token", this.token);
         sessionStorage.setItem("user", JSON.stringify(this.user));
+        console.log("User stored in session:", this.user);
       } catch (err) {
         this.error = err.response?.data?.message || err.message;
       } finally {
