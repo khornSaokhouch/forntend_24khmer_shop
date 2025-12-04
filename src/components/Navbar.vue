@@ -1,263 +1,235 @@
 <template>
-  <!-- Navbar using pure Tailwind CSS classes -->
-  <nav class="bg-gradient-to-r from-white/95 via-white/90 to-white/95 backdrop-blur-xl border-b border-white/20 shadow-lg shadow-indigo-500/10 sticky top-0 z-50 relative overflow-hidden">
-    <!-- Animated background gradient -->
-    <div class="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-pink-500/5 animate-pulse"></div>
-    
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative">
-      <div class="flex items-center justify-between h-20">
-        <!-- Left: Logo and Navigation -->
-        <div class="flex items-center space-x-8">
-          <!-- Logo -->
-          <router-link to="/" class="flex-shrink-0 group">
-            <div class="relative">
-              <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
-              <img
-                src="@/assets/logo.png"
-                alt="Shopping Store Logo"
-                class="w-12 h-12 object-contain relative z-10 group-hover:scale-110 transition-transform duration-300 drop-shadow-lg"
-              />
+  <div>
+    <!-- ============================================== -->
+    <!-- DESKTOP & TABLET TOP NAVBAR (Hidden on small mobile) -->
+    <!-- ============================================== -->
+    <nav class="fixed top-0 inset-x-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 transition-all duration-300">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16 md:h-20">
+          
+          <!-- LEFT: Logo -->
+          <router-link to="/" class="flex-shrink-0 flex items-center gap-2 group">
+            <div class="relative w-10 h-10 flex items-center justify-center bg-indigo-600 rounded-xl shadow-lg shadow-indigo-500/30 group-hover:scale-105 transition-transform">
+              <!-- Replaced Image with Icon for demo reliability, put your <img> back here if needed -->
+              <ShoppingBag class="text-white w-6 h-6" /> 
             </div>
+            <span class="hidden sm:block font-bold text-xl tracking-tight text-slate-800">
+              Mini<span class="text-indigo-600">Store</span>
+            </span>
           </router-link>
 
-          <!-- Desktop Navigation -->
-          <div class="hidden md:flex items-center space-x-1">
+          <!-- CENTER: Desktop Navigation -->
+          <div class="hidden md:flex items-center space-x-1 bg-slate-50 p-1 rounded-full border border-slate-100 mx-4">
             <router-link 
               v-for="link in navLinks" 
               :key="link.to" 
               :to="link.to" 
-              class="group relative px-4 py-2 rounded-xl text-sm font-medium text-slate-700 hover:text-indigo-600 transition-all duration-300 overflow-hidden router-link-exact-active:text-indigo-600"
-              active-class="bg-gradient-to-r from-indigo-500/20 to-purple-500/20 shadow-inner"
+              class="px-5 py-2 rounded-full text-sm font-medium text-slate-600 hover:text-indigo-600 transition-all duration-200"
+              active-class="bg-white text-indigo-600 shadow-sm ring-1 ring-black/5"
             >
-              <!-- Hover background effect -->
-              <span class="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-              <span class="relative z-10">{{ link.text }}</span>
+              {{ link.text }}
             </router-link>
           </div>
-        </div>
 
-        <!-- Search Bar -->
-        <div class="hidden lg:flex flex-1 max-w-lg mx-8 group">
-          <div class="relative w-full">
-            <div class="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div class="relative bg-white/80 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
-              <span class="absolute inset-y-0 left-0 flex items-center pl-4">
-                <Search class="w-5 h-5 text-indigo-500" />
-              </span>
-              <input
-                type="text"
-                placeholder="Search for anything magical..."
-                class="w-full bg-transparent text-slate-800 placeholder-slate-500 rounded-2xl py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-300"
+          <!-- RIGHT: Utilities & Profile -->
+          <div class="flex items-center gap-2 sm:gap-4">
+            
+            <!-- Desktop Search Input -->
+            <div class="hidden lg:block relative group">
+              <input 
+                type="text" 
+                placeholder="Search..." 
+                class="w-48 focus:w-64 transition-all duration-300 bg-slate-50 border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-indigo-500/20 text-slate-700"
               />
+              <Search class="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5 pointer-events-none" />
             </div>
-          </div>
-        </div>
 
-        <!-- Right Section -->
-        <div class="flex items-center space-x-6">
-          <!-- Desktop Icons -->
-          <div class="hidden md:flex items-center space-x-4">
-            <router-link to="/favorites" class="group text-slate-600 hover:text-indigo-600 transition-all duration-300 p-2 rounded-xl hover:bg-white/50 hover:shadow-lg hover:scale-110">
-              <div class="relative">
-                <div class="absolute inset-0 bg-gradient-to-r from-pink-500 to-red-500 rounded-full blur-lg opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
-                <Heart class="w-6 h-6 relative z-10 group-hover:fill-current group-hover:text-pink-500 transition-all duration-300" />
-              </div>
-            </router-link>
-
-            <router-link to="/cart" class="group relative text-slate-600 hover:text-indigo-600 transition-all duration-300 p-2 rounded-xl hover:bg-white/50 hover:shadow-lg hover:scale-110">
-              <div class="relative">
-                <div class="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
-                <ShoppingCart class="w-6 h-6 relative z-10 group-hover:text-emerald-500 transition-all duration-300" />
-              </div>
-              <span
-                v-if="cartCount > 0"
-                class="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center border-2 border-white shadow-lg animate-bounce"
-              >
-                {{ cartCount }}
-              </span>
-            </router-link>
-          </div>
-
-          <!-- Divider -->
-          <div class="hidden md:block w-px h-8 bg-gradient-to-b from-transparent via-slate-300 to-transparent"></div>
-
-          <!-- Profile Section -->
-          <div class="hidden md:flex items-center">
-            <div v-if="user" class="relative group">
-              <router-link to="/profile" class="block">
-                <div class="relative">
-                  <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full blur-lg opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
-                  <div v-if="user.profile_image" class="w-11 h-11 rounded-full overflow-hidden ring-2 ring-white/50 group-hover:ring-indigo-500/50 transition-all duration-300 relative z-10 shadow-lg">
-                    <img :src="`${API_URL}/${user.profile_image}`" alt="Profile" class="w-full h-full object-cover" />
-                  </div>
-                  <div v-else class="w-11 h-11 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg ring-2 ring-white/50 group-hover:ring-indigo-500/50 transition-all duration-300 relative z-10 shadow-lg">
-                    {{ user.name.charAt(0).toUpperCase() }}
-                  </div>
-                </div>
-              </router-link>
-            </div>
-            <div v-else>
-              <router-link to="/login" class="group relative px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl text-sm font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 overflow-hidden">
-                <!-- Hover gradient effect -->
-                <span class="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></span>
-                <span class="relative z-10">Login</span>
-              </router-link>
-            </div>
-          </div>
-          
-          <!-- Mobile Menu Button -->
-          <div class="md:hidden">
-            <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="group text-slate-600 hover:text-indigo-600 transition-all duration-300 p-2 rounded-xl hover:bg-white/50 hover:shadow-lg">
-              <div class="relative">
-                <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg blur-lg opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
-                <Menu v-if="!isMobileMenuOpen" class="w-7 h-7 relative z-10 group-hover:text-indigo-600 transition-colors duration-300" />
-                <X v-else class="w-7 h-7 relative z-10 group-hover:text-indigo-600 transition-colors duration-300" />
-              </div>
+            <!-- Mobile Search Toggle (Visible only on mobile top bar) -->
+            <button @click="isSearchOpen = !isSearchOpen" class="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-full">
+              <Search class="w-6 h-6" />
             </button>
+
+            <!-- Actions (Desktop Only - Mobile has Bottom Bar) -->
+            <div class="hidden md:flex items-center gap-2">
+              <router-link to="/favorites" class="p-2 text-slate-600 hover:text-pink-500 hover:bg-pink-50 rounded-full transition-colors relative">
+                <Heart class="w-6 h-6" />
+              </router-link>
+              
+              <router-link to="/cart" class="p-2 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors relative">
+                <ShoppingCart class="w-6 h-6" />
+                <span v-if="cartCount > 0" class="absolute top-0 right-0 h-4 w-4 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border border-white">
+                  {{ cartCount }}
+                </span>
+              </router-link>
+            </div>
+
+            <!-- Profile Dropdown / Login -->
+            <div class="pl-2 border-l border-slate-200 ml-2">
+              <template v-if="user">
+                <router-link to="/profile" class="flex items-center gap-2 group">
+                  <div class="relative w-9 h-9 rounded-full overflow-hidden ring-2 ring-transparent group-hover:ring-indigo-500 transition-all bg-slate-200">
+                    <img 
+                      v-if="user.profile_image" 
+                      :src="`${API_URL}/${user.profile_image}`" 
+                      class="w-full h-full object-cover"
+                    />
+                    <div v-else class="w-full h-full flex items-center justify-center bg-indigo-100 text-indigo-600 font-bold">
+                      {{ user.name?.charAt(0).toUpperCase() }}
+                    </div>
+                  </div>
+                </router-link>
+              </template>
+              
+              <template v-else>
+                <router-link to="/login" class="flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-indigo-600 text-white text-sm font-medium rounded-full transition-colors shadow-lg shadow-indigo-500/20">
+                  <span>Login</span>
+                  <ArrowRight class="w-4 h-4" />
+                </router-link>
+              </template>
+            </div>
+
           </div>
         </div>
       </div>
+
+      <!-- Mobile Search Overlay -->
+      <div v-if="isSearchOpen" class="lg:hidden absolute top-full left-0 w-full bg-white p-4 shadow-xl border-b border-slate-100 animate-in slide-in-from-top-2">
+        <div class="relative">
+          <Search class="absolute left-4 top-3.5 w-5 h-5 text-indigo-500" />
+          <input 
+            type="text" 
+            placeholder="Search products..." 
+            class="w-full bg-slate-50 text-slate-800 rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            autofocus
+          />
+          <button @click="isSearchOpen = false" class="absolute right-3 top-3 p-1 text-slate-400">
+            <X class="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ============================================== -->
+    <!-- MOBILE BOTTOM NAVIGATION (The "App" Feel) -->
+    <!-- ============================================== -->
+    <div class="md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-xl border-t border-slate-200 pb-safe z-50">
+      <div class="flex justify-around items-center h-16 px-2">
+        
+        <router-link to="/" class="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-500" active-class="text-indigo-600">
+          <Home class="w-6 h-6" :class="{ 'fill-current': $route.path === '/' }" />
+          <span class="text-[10px] font-medium">Home</span>
+        </router-link>
+
+        <router-link to="/categories" class="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-500" active-class="text-indigo-600">
+          <Grid class="w-6 h-6" :class="{ 'fill-current': $route.path === '/categories' }" />
+          <span class="text-[10px] font-medium">Catg.</span>
+        </router-link>
+
+        <!-- Center Cart Button (Floating Effect) -->
+        <div class="relative -top-5">
+          <router-link to="/cart" class="flex items-center justify-center w-14 h-14 bg-indigo-600 rounded-full shadow-lg shadow-indigo-500/40 text-white transform transition-transform active:scale-95">
+            <ShoppingCart class="w-6 h-6" />
+            <span v-if="cartCount > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">
+              {{ cartCount }}
+            </span>
+          </router-link>
+        </div>
+
+        <router-link to="/favorites" class="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-500" active-class="text-pink-500">
+          <Heart class="w-6 h-6" :class="{ 'fill-current': $route.path === '/favorites' }" />
+          <span class="text-[10px] font-medium">Saved</span>
+        </router-link>
+
+        <router-link :to="user ? '/profile' : '/login'" class="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-500" active-class="text-indigo-600">
+          <User class="w-6 h-6" :class="{ 'fill-current': $route.path === '/profile' }" />
+          <span class="text-[10px] font-medium">{{ user ? 'Profile' : 'Login' }}</span>
+        </router-link>
+
+      </div>
+      <!-- Safe Area Spacing for iPhone X+ -->
+      <div class="h-1 bg-transparent w-full"></div>
     </div>
     
-    <!-- Mobile Menu -->
-    <transition
-      enter-active-class="transition ease-out duration-300"
-      enter-from-class="opacity-0 translate-y-2 scale-95"
-      enter-to-class="opacity-100 translate-y-0 scale-100"
-      leave-active-class="transition ease-in duration-200"
-      leave-from-class="opacity-100 translate-y-0 scale-100"
-      leave-to-class="opacity-0 translate-y-2 scale-95"
-    >
-      <div v-if="isMobileMenuOpen" class="md:hidden bg-white/95 backdrop-blur-xl border-t border-white/30 shadow-2xl">
-        <div class="px-4 pt-4 pb-6 space-y-2">
-          <router-link 
-            v-for="link in mobileNavLinks" 
-            :key="link.to" 
-            :to="link.to" 
-            class="group flex items-center px-4 py-3 rounded-xl text-base font-medium text-slate-700 hover:bg-gradient-to-r hover:from-indigo-50/50 hover:to-purple-50/30 transition-all duration-300"
-            active-class="bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-indigo-600 shadow-inner"
-            @click="isMobileMenuOpen = false"
-          >
-            <div class="flex items-center">
-              <div class="relative mr-3">
-                <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg blur-lg opacity-0 group-hover:opacity-30 transition-opacity duration-300"></div>
-                <component :is="link.icon" class="w-5 h-5 relative z-10 group-hover:text-indigo-600 transition-colors duration-300" />
-              </div>
-              <span class="group-hover:text-indigo-600 transition-colors duration-300">{{ link.text }}</span>
-            </div>
-          </router-link>
-
-          <!-- Mobile User Section -->
-          <div class="pt-4 mt-4 border-t border-slate-200/50">
-            <div v-if="user" class="group">
-              <router-link to="/profile" class="flex items-center p-3 rounded-xl bg-gradient-to-r from-white/50 to-white/30 backdrop-blur-sm hover:from-indigo-50/50 hover:to-purple-50/30 transition-all duration-300" @click="isMobileMenuOpen = false">
-                <div class="relative">
-                  <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full blur-lg opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
-                  <div v-if="user.profile_image" class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 relative z-10 shadow-lg">
-                    <img :src="`${API_URL}/${user.profile_image}`" alt="Profile" class="w-full h-full object-cover" />
-                  </div>
-                  <div v-else class="w-12 h-12 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg flex-shrink-0 relative z-10 shadow-lg">
-                    {{ user.name.charAt(0).toUpperCase() }}
-                  </div>
-                </div>
-                <div class="ml-4">
-                  <div class="text-base font-semibold text-slate-800 group-hover:text-indigo-600 transition-colors duration-300">{{ user.name }}</div>
-                  <div class="text-sm text-slate-500">{{ user.email }}</div>
-                </div>
-              </router-link>
-            </div>
-            <div v-else class="px-2">
-              <router-link to="/login" class="group block w-full text-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 font-semibold relative overflow-hidden" @click="isMobileMenuOpen = false">
-                 <!-- Hover gradient effect -->
-                <span class="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                <span class="relative z-10">Login to Your Account</span>
-              </router-link>
-            </div>
-          </div>
-        </div>
-      </div>
-    </transition>
-  </nav>
+    <!-- Spacer to prevent content hiding behind fixed navs -->
+    <div class="h-16 md:h-20"></div>
+  </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
+import { useRoute } from "vue-router";
 import { useAuthStore } from "../store/authStore";
 import { useShoppingCartStore } from "../store/useShoppingCartStore";
-import { Search, Heart, ShoppingCart, Home, Box, List, Info, Phone, Menu, X } from "lucide-vue-next";
+// Imported Lucide Icons - Ensure you have lucide-vue-next installed
+import { 
+  Search, Heart, ShoppingCart, Home, 
+  ShoppingBag, User, Grid, ArrowRight, X 
+} from "lucide-vue-next";
 
-const isMobileMenuOpen = ref(false);
+const route = useRoute();
 const authStore = useAuthStore();
 const cartStore = useShoppingCartStore();
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL || '';
 
+// State
+const isSearchOpen = ref(false);
 const cartCount = ref(0);
 
-// reactive user
+// Computed
 const user = computed(() => authStore.user);
 
-// Navbar links (no change)
+// Links Configuration
 const navLinks = [
   { to: "/", text: "Home" },
-  { to: "/products", text: "Products" },
+  { to: "/products", text: "Shop" },
   { to: "/categories", text: "Categories" },
   { to: "/about", text: "About" },
-  { to: "/contact", text: "Contact Us" },
 ];
 
-const mobileNavLinks = [
-  { to: "/", text: "Home", icon: Home },
-  { to: "/products", text: "Products", icon: Box },
-  { to: "/categories", text: "Categories", icon: List },
-  { to: "/favorites", text: "Favorites", icon: Heart },
-  { to: "/cart", text: "Shopping Cart", icon: ShoppingCart },
-  { to: "/about", text: "About", icon: Info },
-  { to: "/contact", text: "Contact Us", icon: Phone },
-];
-
+// Logic to calculate cart items
 const updateCartCount = () => {
-  if (!cartStore.cart || !cartStore.cart.items) {
-    cartCount.value = 0;
-    return;
-  }
-  cartCount.value = cartStore.cart.items.reduce((sum, item) => sum + item.qty, 0);
+  // Safe navigation (?.) ensures app doesn't crash if cart is null
+  const items = cartStore.cart?.items || [];
+  cartCount.value = items.reduce((sum, item) => sum + (item.qty || 0), 0);
 };
 
-const fetchCart = async () => {
-  if (user.value) {
-    await cartStore.fetchCart();
-    updateCartCount();
+// Fetch data
+const initData = async () => {
+  try {
+    authStore.loadFromStorage();
+    if (authStore.token && !authStore.user) {
+      await authStore.loadUser();
+    }
+    if (authStore.user) {
+      await cartStore.fetchCart();
+      updateCartCount();
+    }
+  } catch (error) {
+    console.error("Nav init error:", error);
   }
 };
 
-onMounted(async () => {
-  // load auth from session storage
-  authStore.loadFromStorage();
-
-  // if token exists but no user in memory, fetch from backend (/auth/user)
-  if (authStore.token && !authStore.user) {
-    await authStore.loadUser();
-  }
-
-  // once user is ready, load cart
-  await fetchCart();
+onMounted(() => {
+  initData();
 });
 
-// update cart count when cart changes
-watch(
-  () => cartStore.cart,
-  () => updateCartCount(),
-  { deep: true }
-);
+// Watchers for reactivity
+watch(() => cartStore.cart, updateCartCount, { deep: true });
 
-// logout cleanup
+// Close search when route changes
+watch(() => route.path, () => {
+  isSearchOpen.value = false;
+});
+
+// Reset when user logs out
 watch(user, (newUser) => {
-  if (!newUser) {
-    cartCount.value = 0;
-    isMobileMenuOpen.value = false;
-  }
+  if (!newUser) cartCount.value = 0;
 });
 </script>
 
-
-<!-- The <style scoped> block is no longer needed -->
+<style scoped>
+/* Utility for iPhone Safe Area in bottom nav */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+</style>

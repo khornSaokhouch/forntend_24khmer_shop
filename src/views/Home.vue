@@ -1,12 +1,12 @@
 <template>
-  <div class="relative min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 overflow-hidden">
+  <div class="relative min-h-screen overflow-hidden">
     <!-- 
       Decorative Floating Shapes 
       [ANIMATION] Added the `float-animation` class you defined to make the background elements move.
     -->
-    <div class="absolute top-0 left-0 w-72 h-72 bg-blue-300/20 rounded-full blur-3xl -translate-x-1/3 -translate-y-1/3 float-animation" style="animation-delay: 0s;"></div>
+    <!-- <div class="absolute top-0 left-0 w-72 h-72 bg-blue-300/20 rounded-full blur-3xl -translate-x-1/3 -translate-y-1/3 float-animation" style="animation-delay: 0s;"></div>
     <div class="absolute bottom-0 right-0 w-96 h-96 bg-cyan-300/30 rounded-full blur-3xl translate-x-1/4 translate-y-1/4 float-animation" style="animation-delay: 2s;"></div>
-    <div class="absolute top-1/2 left-1/2 w-80 h-80 bg-indigo-200/20 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2 float-animation" style="animation-delay: 4s;"></div>
+    <div class="absolute top-1/2 left-1/2 w-80 h-80 bg-indigo-200/20 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2 float-animation" style="animation-delay: 4s;"></div> -->
 
     <!-- Main content -->
     <div class="relative z-10 px-4">

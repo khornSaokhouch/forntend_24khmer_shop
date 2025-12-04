@@ -1,132 +1,106 @@
 <template>
-  <footer class="relative bg-gradient-to-r from-white/95 via-white/90 to-white/95 backdrop-blur-xl border-t border-white/20 shadow-inner overflow-hidden">
-    <!-- Animated gradient background -->
-    <div class="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-pink-500/5 animate-pulse"></div>
-
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-      <!-- Main Footer Content -->
-      <div class="py-16 grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <footer class="bg-slate-50 border-t border-slate-200 pt-12 pb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Top Section: Brand & Newsletter -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-12">
         
-        <!-- Brand & Newsletter Section -->
-        <div class="lg:col-span-5">
-          <div class="flex items-center space-x-3 group">
-            <div class="relative">
-              <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-300"></div>
-              <div class="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center relative z-10 group-hover:scale-110 transition-transform duration-300">
-                <span class="text-white font-bold text-lg">S</span>
-              </div>
+        <!-- Brand Info -->
+        <div class="lg:col-span-4 space-y-4">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold shadow-md shadow-indigo-500/20">
+              M
             </div>
-            <span class="text-xl font-bold bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">Shopping Store</span>
+            <span class="text-xl font-bold text-slate-900">MiniStore</span>
           </div>
-          
-          <p class="mt-4 text-slate-600 max-w-md leading-relaxed text-sm">
-            Your one-stop shop for quality products delivered with exceptional service.
+          <p class="text-slate-500 text-sm leading-relaxed">
+            Experience the magic of modern shopping. Quality products, fast delivery, and premium support right in your pocket.
           </p>
           
-          <!-- Newsletter Form -->
-          <div class="mt-8 p-4 bg-white/20 backdrop-blur-sm rounded-2xl border border-white/20 hover:border-indigo-500/30 transition-all duration-300">
-            <h3 class="text-base font-semibold text-slate-800 mb-1 flex items-center">
-              <span class="w-2 h-2 bg-indigo-500 rounded-full mr-2 animate-pulse"></span>
-              Newsletter
-            </h3>
-            <p class="text-xs text-slate-500 mb-4">Get weekly updates and deals.</p>
-            
-            <form class="space-y-3">
-              <input 
-                type="email" 
-                required 
-                class="w-full bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl px-3 py-2 text-slate-800 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-300 text-sm" 
-                placeholder="Enter your email"
-              >
-              <button 
-                type="submit" 
-                class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-medium py-2 px-4 rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 text-sm"
-              >
+          <!-- Socials -->
+          <div class="flex space-x-4 pt-2">
+            <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-600 transition-all">
+              <Facebook class="w-4 h-4" />
+            </a>
+            <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-500 hover:text-pink-600 hover:border-pink-600 transition-all">
+              <Instagram class="w-4 h-4" />
+            </a>
+            <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-500 hover:text-sky-500 hover:border-sky-500 transition-all">
+              <Twitter class="w-4 h-4" />
+            </a>
+          </div>
+        </div>
+
+        <!-- Links Grid -->
+        <div class="lg:col-span-5 grid grid-cols-2 sm:grid-cols-3 gap-8">
+          <div>
+            <h3 class="font-semibold text-slate-900 mb-4">Shop</h3>
+            <ul class="space-y-3 text-sm">
+              <li><router-link to="/products" class="text-slate-500 hover:text-indigo-600 transition-colors">New Arrivals</router-link></li>
+              <li><router-link to="/categories" class="text-slate-500 hover:text-indigo-600 transition-colors">Categories</router-link></li>
+              <li><router-link to="/favorites" class="text-slate-500 hover:text-indigo-600 transition-colors">Favorites</router-link></li>
+              <li><router-link to="/products" class="text-slate-500 hover:text-indigo-600 transition-colors">Sale</router-link></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="font-semibold text-slate-900 mb-4">Support</h3>
+            <ul class="space-y-3 text-sm">
+              <li><a href="#" class="text-slate-500 hover:text-indigo-600 transition-colors">Help Center</a></li>
+              <li><a href="#" class="text-slate-500 hover:text-indigo-600 transition-colors">Shipping</a></li>
+              <li><a href="#" class="text-slate-500 hover:text-indigo-600 transition-colors">Returns</a></li>
+              <li><a href="#" class="text-slate-500 hover:text-indigo-600 transition-colors">Contact</a></li>
+            </ul>
+          </div>
+          <div class="hidden sm:block">
+            <h3 class="font-semibold text-slate-900 mb-4">Legal</h3>
+            <ul class="space-y-3 text-sm">
+              <li><a href="#" class="text-slate-500 hover:text-indigo-600 transition-colors">Privacy</a></li>
+              <li><a href="#" class="text-slate-500 hover:text-indigo-600 transition-colors">Terms</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Newsletter -->
+        <div class="lg:col-span-3">
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <h3 class="font-semibold text-slate-900 mb-2">Get 10% Off</h3>
+            <p class="text-xs text-slate-500 mb-4">Subscribe to our newsletter and get a discount on your first order.</p>
+            <form class="space-y-2">
+              <div class="relative">
+                <Mail class="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+                <input 
+                  type="email" 
+                  placeholder="Your email" 
+                  class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
+                />
+              </div>
+              <button class="w-full bg-slate-900 hover:bg-indigo-600 text-white text-sm font-medium py-2 rounded-xl transition-colors shadow-lg shadow-slate-200">
                 Subscribe
               </button>
             </form>
           </div>
         </div>
 
-        <!-- Links Sections -->
-        <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-8">
-          <div class="group">
-            <h3 class="text-sm font-bold text-slate-800 uppercase mb-4 flex items-center">
-              <span class="w-6 h-0.5 bg-indigo-500 mr-2 group-hover:w-8 transition-all duration-300"></span>
-              Shop
-            </h3>
-            <ul class="space-y-2">
-              <li><a href="#" class="footer-link-fancy">All Products</a></li>
-              <li><a href="#" class="footer-link-fancy">Categories</a></li>
-              <li><a href="#" class="footer-link-fancy">New Arrivals</a></li>
-              <li><a href="#" class="footer-link-fancy">On Sale</a></li>
-            </ul>
-          </div>
-          
-          <div class="group">
-            <h3 class="text-sm font-bold text-slate-800 uppercase mb-4 flex items-center">
-              <span class="w-6 h-0.5 bg-indigo-500 mr-2 group-hover:w-8 transition-all duration-300"></span>
-              Company
-            </h3>
-            <ul class="space-y-2">
-              <li><a href="#" class="footer-link-fancy">About Us</a></li>
-              <li><a href="#" class="footer-link-fancy">Careers</a></li>
-              <li><a href="#" class="footer-link-fancy">Contact</a></li>
-              <li><a href="#" class="footer-link-fancy">Support</a></li>
-            </ul>
-          </div>
-          
-          <div class="group">
-            <h3 class="text-sm font-bold text-slate-800 uppercase mb-4 flex items-center">
-              <span class="w-6 h-0.5 bg-indigo-500 mr-2 group-hover:w-8 transition-all duration-300"></span>
-              Help
-            </h3>
-            <ul class="space-y-2">
-              <li><a href="#" class="footer-link-fancy">FAQ</a></li>
-              <li><a href="#" class="footer-link-fancy">Shipping</a></li>
-              <li><a href="#" class="footer-link-fancy">Returns</a></li>
-              <li><a href="#" class="footer-link-fancy">Privacy</a></li>
-            </ul>
-          </div>
-        </div>
       </div>
 
       <!-- Bottom Bar -->
-      <div class="py-6 border-t border-white/20">
-        <div class="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
-          <p class="text-xs text-slate-600">
-            &copy; {{ new Date().getFullYear() }} Shopping Store. All Rights Reserved.
-          </p>
-          
-          <!-- Social Links -->
-          <div class="flex space-x-4">
-            <a href="#" class="social-link-fancy">T</a>
-            <a href="#" class="social-link-fancy">F</a>
-            <a href="#" class="social-link-fancy">I</a>
-          </div>
+      <div class="border-t border-slate-200 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        <p class="text-xs text-slate-500">
+          &copy; {{ new Date().getFullYear() }} MiniStore Inc. All rights reserved.
+        </p>
+        
+        <!-- Payment Icons (Mockup) -->
+        <div class="flex items-center space-x-3 opacity-60 grayscale hover:grayscale-0 transition-all duration-300">
+          <div class="h-6 w-10 bg-slate-200 rounded flex items-center justify-center text-[10px] font-bold text-slate-600">VISA</div>
+          <div class="h-6 w-10 bg-slate-200 rounded flex items-center justify-center text-[10px] font-bold text-slate-600">MC</div>
+          <div class="h-6 w-10 bg-slate-200 rounded flex items-center justify-center text-[10px] font-bold text-slate-600">PAY</div>
         </div>
       </div>
+
     </div>
   </footer>
 </template>
 
-<style scoped>
-/* Footer links with hover gradient effect */
-.footer-link-fancy {
-  @apply text-slate-700 hover:text-indigo-600 transition-all duration-300 relative inline-block text-sm;
-}
-
-.footer-link-fancy::before {
-  content: '';
-  @apply absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-300;
-}
-
-.footer-link-fancy:hover::before {
-  @apply w-full;
-}
-
-/* Social links hover effect */
-.social-link-fancy {
-  @apply w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-slate-700 hover:text-indigo-600 hover:bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-300 text-xs font-semibold;
-}
-</style>
+<script setup>
+import { Facebook, Instagram, Twitter, Mail } from 'lucide-vue-next';
+</script>
