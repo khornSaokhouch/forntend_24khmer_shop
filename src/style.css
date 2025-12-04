@@ -1,0 +1,12 @@
+/* Import Khmer fonts first */
+@import url('https://fonts.googleapis.com/css2?family=Battambang&family=Noto+Sans+Khmer&display=swap');
+
+/* Then Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Optional: Set global font for Khmer throughout the project */
+body {
+  font-family: 'Battambang', 'Noto Sans Khmer', sans-serif;
+}
