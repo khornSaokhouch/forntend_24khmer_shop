@@ -47,14 +47,18 @@ const otp = ref("");
 const otpSent = ref(false);
 
 onMounted(() => {
-  if (window.Telegram?.WebApp) {
-    // Get Telegram user automatically
+  const storedTelegramId = sessionStorage.getItem("telegram_id");
+  if (storedTelegramId) {
+    telegramUser.value = { id: storedTelegramId }; // only ID needed for OTP
+    requestOtp(); // automatically send OTP
+  } else if (window.Telegram?.WebApp) {
     telegramUser.value = window.Telegram.WebApp.initDataUnsafe.user;
-    console.log("Telegram user info:", telegramUser.value);
+    sessionStorage.setItem("telegram_id", telegramUser.value.id); // store it
   } else {
     auth.error = "This app must be opened inside Telegram.";
   }
 });
+
 
 const requestOtp = async () => {
   if (!telegramUser.value) return;

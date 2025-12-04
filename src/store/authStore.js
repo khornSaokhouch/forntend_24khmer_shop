@@ -43,17 +43,22 @@ export const useAuthStore = defineStore("auth", {
     loadFromStorage() {
       const token = sessionStorage.getItem("token");
       const user = sessionStorage.getItem("user");
+      const telegramId = sessionStorage.getItem("telegram_id");
       if (token && user) {
         this.token = token;
         this.user = JSON.parse(user);
+        this.telegramId = telegramId; // add this
       }
     },
-
+    
     logout() {
       this.token = null;
       this.user = null;
+      this.telegramId = null;
       sessionStorage.removeItem("token");
       sessionStorage.removeItem("user");
-    },
+      sessionStorage.removeItem("telegram_id");
+    }
   },
+    
 });
