@@ -1,23 +1,30 @@
 <template>
   <div class="login-container">
-    <h1>Login via Telegram OTP</h1>
+    <h1>Login via Telegram</h1>
 
-    <div v-if="telegramUser">
+    <div v-if="!telegramUser">
+      <p>Please open this page inside Telegram Web App.</p>
+    </div>
+
+    <div v-else>
       <p>Hello, {{ telegramUser.first_name }}!</p>
       <p>Your Telegram ID: {{ telegramUser.id }}</p>
 
-      <!-- Send OTP button -->
-      <button @click="requestOtp" :disabled="otpSent">
-        {{ otpSent ? "OTP Sent" : "Send OTP" }}
-      </button>
-    </div>
+      <div v-if="!otpSent">
+        <button @click="requestOtp" :disabled="auth.loading">
+          {{ auth.loading ? "Sending OTP..." : "Send OTP" }}
+        </button>
+      </div>
 
-    <div v-if="otpSent">
-      <input v-model="otp" placeholder="Enter OTP" />
-      <button @click="verifyOtpCode">Verify OTP</button>
-    </div>
+      <div v-if="otpSent">
+        <input v-model="otp" placeholder="Enter OTP" />
+        <button @click="verifyOtpCode" :disabled="auth.loading">
+          {{ auth.loading ? "Verifying..." : "Verify OTP" }}
+        </button>
+      </div>
 
-    <p v-if="error" style="color:red">{{ error }}</p>
+      <p v-if="auth.error" style="color:red">{{ auth.error }}</p>
+    </div>
   </div>
 </template>
 
@@ -29,35 +36,45 @@ const auth = useAuthStore();
 const telegramUser = ref(null);
 const otp = ref("");
 const otpSent = ref(false);
-const error = ref(null);
 
 onMounted(() => {
-  // Check if inside Telegram Web App
   if (window.Telegram?.WebApp) {
+    // Get Telegram user automatically
     telegramUser.value = window.Telegram.WebApp.initDataUnsafe.user;
-    console.log("Telegram user:", telegramUser.value);
   } else {
-    error.value = "Please open this page inside Telegram using the Bot.";
+    auth.error = "This app must be opened inside Telegram.";
   }
 });
 
-// Request OTP via bot
 const requestOtp = async () => {
   if (!telegramUser.value) return;
-  try {
-    await auth.sendOtp(telegramUser.value.id);
-    otpSent.value = true;
-  } catch (err) {
-    error.value = err.message;
-  }
+  await auth.sendOtp(telegramUser.value.id);
+  if (!auth.error) otpSent.value = true;
 };
 
-// Verify OTP
 const verifyOtpCode = async () => {
   if (!telegramUser.value) return;
   await auth.verifyOtp(telegramUser.value.id, otp.value);
   if (!auth.error) {
     alert(`Welcome ${auth.user.first_name}!`);
+    // Redirect to dashboard or main page
   }
 };
 </script>
+
+<style scoped>
+.login-container {
+  max-width: 400px;
+  margin: 50px auto;
+  text-align: center;
+}
+input {
+  padding: 8px;
+  margin: 10px 0;
+  width: 100%;
+}
+button {
+  padding: 10px 20px;
+  cursor: pointer;
+}
+</style>

@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import api from "../services/api.js";
+import api from "@/services/api.js";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
@@ -8,41 +8,37 @@ export const useAuthStore = defineStore("auth", {
     loading: false,
     error: null,
   }),
-
   actions: {
-    // Request OTP
-    async sendOtp(telegram_id) {
+    async sendOtp(telegramId) {
       this.loading = true;
       this.error = null;
       try {
-        await api.post("/auth/send-otp", { telegram_id });
+        const res = await api.post("/auth/send-otp", { telegram_id: telegramId });
+        this.loading = false;
+        return res.data;
       } catch (err) {
-        this.error = err.response?.data?.message || "Failed to send OTP";
-      } finally {
+        this.error = err.response?.data?.message || err.message;
         this.loading = false;
       }
     },
 
-    // Verify OTP and login
-    async verifyOtp(telegram_id, otp) {
+    async verifyOtp(telegramId, otp) {
       this.loading = true;
       this.error = null;
       try {
-        const res = await api.post("/auth/verify-otp", { telegram_id, otp });
-        this.token = res.data.token;
+        const res = await api.post("/auth/verify-otp", { telegram_id: telegramId, otp });
         this.user = res.data.data;
+        this.token = res.data.token;
 
-        // Store in sessionStorage
         sessionStorage.setItem("token", this.token);
         sessionStorage.setItem("user", JSON.stringify(this.user));
       } catch (err) {
-        this.error = err.response?.data?.message || "OTP verification failed";
+        this.error = err.response?.data?.message || err.message;
       } finally {
         this.loading = false;
       }
     },
 
-    // Load token/user from sessionStorage
     loadFromStorage() {
       const token = sessionStorage.getItem("token");
       const user = sessionStorage.getItem("user");
@@ -52,33 +48,11 @@ export const useAuthStore = defineStore("auth", {
       }
     },
 
-    // Logout
     logout() {
       this.token = null;
       this.user = null;
       sessionStorage.removeItem("token");
       sessionStorage.removeItem("user");
-    },
-
-    // Fetch latest user info
-    async fetchUser() {
-      if (!this.user?.id) return;
-      this.loading = true;
-      try {
-        const res = await api.get(`/users/${this.user.id}`);
-        this.user = res.data.data;
-        sessionStorage.setItem("user", JSON.stringify(this.user));
-      } catch (err) {
-        this.error = err.response?.data?.message || "Failed to fetch user";
-      } finally {
-        this.loading = false;
-      }
-    },
-
-    // Update local user state
-    updateLocalUser(updatedData) {
-      this.user = { ...this.user, ...updatedData };
-      sessionStorage.setItem("user", JSON.stringify(this.user));
     },
   },
 });
