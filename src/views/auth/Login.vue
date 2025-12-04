@@ -80,7 +80,6 @@ const logout = () => {
 };
 
 onMounted(async () => {
-  // Get telegram_id from URL query param
   const urlParams = new URLSearchParams(window.location.search);
   const telegramId = urlParams.get("telegram_id");
 
@@ -89,22 +88,22 @@ onMounted(async () => {
     return;
   }
 
-  // Store telegram_id in sessionStorage
+  // Store Telegram ID in sessionStorage and Pinia
   sessionStorage.setItem("telegram_id", telegramId);
-
-  // Create a minimal telegramUser object for display
   telegramUser.value = { id: telegramId, first_name: "Telegram User" };
 
-  // Load existing user/token from storage
+  // Load existing user/token
   auth.loadFromStorage();
 
-  // Auto-request OTP if not logged in
+  // Request OTP if user is not logged in
   if (!auth.user) {
-    await requestOtp();
+    await auth.sendOtp(telegramId);
+    if (!auth.error) otpSent.value = true;
   } else {
     otpSent.value = true;
   }
 });
+
 </script>
 
 <style scoped>
