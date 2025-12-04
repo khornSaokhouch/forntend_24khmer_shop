@@ -18,40 +18,40 @@
       -->
       
       <!-- Banner Section -->
-      <div 
+      <!-- <div 
         ref="bannerSection"
         class="transition-all duration-700 ease-out"
         :class="isBannerVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'"
       >
         <BannerSwiper />
-      </div>
+      </div> -->
 
       <!-- Category Section -->
-      <div 
+      <!-- <div 
         ref="categorySection"
         class="transition-all duration-700 ease-out delay-100"
         :class="isCategoryVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'"
       >
         <Category />
-      </div>
+      </div> -->
 
       <!-- Product List Section -->
-      <div 
+      <!-- <div 
         ref="productListSection"
         class="transition-all duration-700 ease-out delay-100"
         :class="isProductListVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'"
       >
         <ProductListPage />
-      </div>
+      </div> -->
 
       <!-- Promotion Section -->
-      <div 
+      <!-- <div 
         ref="promotionSection"
         class="py-16 transition-all duration-700 ease-out delay-100"
         :class="isPromotionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'"
       >
         <ProductPromotion />
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -59,10 +59,10 @@
 <script setup>
 import { ref } from 'vue';
 import { useIntersectionObserver } from '@vueuse/core';
-import Category from "../components/CategoryList.vue"; 
-import BannerSwiper from "../components/BannerSwiper.vue";
-import ProductListPage from "../components/ProductListPage.vue";
-import ProductPromotion from "../components/ProductPromotion.vue";
+// import Category from "../components/CategoryList.vue"; 
+// import BannerSwiper from "../components/BannerSwiper.vue";
+// import ProductListPage from "../components/ProductListPage.vue";
+// import ProductPromotion from "../components/ProductPromotion.vue";
 
 // [ANIMATION] Create refs for each section we want to animate
 const bannerSection = ref(null);

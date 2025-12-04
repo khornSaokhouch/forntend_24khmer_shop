@@ -32,6 +32,9 @@ const routes = [
   // Auth pages
   { path: "/login", component: Login },
   { path: "/register", component: Register },
+  { path: "/verify-otp", name: "verify-otp", component: () => import("../views/auth/VerifyOtp.vue") },
+
+
 
   // Admin pages
   {

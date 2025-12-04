@@ -1,47 +1,28 @@
 <template>
-  <div class="login-container">
-    <h1>Login via Telegram</h1>
+  <div class="container">
+    <h1>Login</h1>
 
-    <!-- Error message -->
-    <div v-if="auth.error">
-      <p style="color:red">{{ auth.error }}</p>
+    <div v-if="auth.error" class="error">{{ auth.error }}</div>
+
+    <div v-if="telegramId">
+      <p>Telegram ID detected:</p>
+      <p class="tid">{{ telegramId }}</p>
+
+      <button @click="requestOtp" :disabled="auth.loading">
+        {{ auth.loading ? "Sending..." : "Send OTP" }}
+      </button>
+
+      <router-link
+        v-if="otpSent"
+        :to="{ name: 'verify-otp', query: { telegram_id: telegramId }}"
+        class="verify-link"
+      >
+        Go to OTP Verification →
+      </router-link>
     </div>
 
-    <!-- Telegram user detected -->
-    <div v-else-if="telegramUser">
-      <p>Hello, {{ telegramUser.first_name }}!</p>
-      <p>Your Telegram ID: {{ telegramUser.id }}</p>
-
-      <!-- Send OTP -->
-      <div v-if="!otpSent && !auth.user">
-        <button @click="requestOtp" :disabled="auth.loading">
-          {{ auth.loading ? "Sending OTP..." : "Send OTP" }}
-        </button>
-      </div>
-
-      <!-- Verify OTP -->
-      <div v-if="otpSent && !auth.user">
-        <input v-model="otp" placeholder="Enter OTP" />
-        <button @click="verifyOtpCode" :disabled="auth.loading">
-          {{ auth.loading ? "Verifying..." : "Verify OTP" }}
-        </button>
-      </div>
-
-      <!-- Logged-in user info -->
-      <div v-if="auth.user">
-        <h2>Profile Info:</h2>
-        <img :src="auth.user.image" alt="Profile Image" width="100" />
-        <p><strong>Name:</strong> {{ auth.user.first_name }} {{ auth.user.last_name }}</p>
-        <p><strong>Username:</strong> {{ auth.user.username }}</p>
-        <p><strong>Telegram ID:</strong> {{ auth.user.telegram_id }}</p>
-        <p><strong>Role:</strong> {{ auth.user.role }}</p>
-        <button @click="logout">Logout</button>
-      </div>
-    </div>
-
-    <!-- Loading state -->
-    <div v-else>
-      <p>Loading Telegram user...</p>
+    <div v-else class="error">
+      Telegram ID not found. Please open from Telegram bot.
     </div>
   </div>
 </template>
@@ -51,80 +32,56 @@ import { ref, onMounted } from "vue";
 import { useAuthStore } from "@/store/authStore";
 
 const auth = useAuthStore();
-const telegramUser = ref(null);
-const otp = ref("");
+const telegramId = ref(null);
 const otpSent = ref(false);
 
-// Request OTP
 const requestOtp = async () => {
-  const telegramId = telegramUser.value?.id;
-  if (!telegramId) return;
-  await auth.sendOtp(telegramId);
-  if (!auth.error) otpSent.value = true;
-};
-
-// Verify OTP
-const verifyOtpCode = async () => {
-  const telegramId = telegramUser.value?.id;
-  if (!telegramId || !otp.value) return;
-  await auth.verifyOtp(telegramId, otp.value);
+  await auth.sendOtp(telegramId.value);
   if (!auth.error) {
-    alert(`Welcome ${auth.user.first_name}!`);
+    otpSent.value = true;
   }
 };
 
-// Logout
-const logout = () => {
-  auth.logout();
-  otpSent.value = false;
-};
+onMounted(() => {
+  const params = new URLSearchParams(window.location.search);
+  telegramId.value = params.get("telegram_id");
 
-onMounted(async () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const telegramId = urlParams.get("telegram_id");
-
-  if (!telegramId) {
-    auth.error = "Telegram ID not found. Please open this app from the Telegram bot.";
+  if (!telegramId.value) {
+    auth.error = "Telegram ID not found.";
     return;
   }
 
-  // Store Telegram ID in sessionStorage and Pinia
-  sessionStorage.setItem("telegram_id", telegramId);
-  telegramUser.value = { id: telegramId, first_name: "Telegram User" };
-
-  // Load existing user/token
-  auth.loadFromStorage();
-
-  // Request OTP if user is not logged in
-  if (!auth.user) {
-    await auth.sendOtp(telegramId);
-    if (!auth.error) otpSent.value = true;
-  } else {
-    otpSent.value = true;
-  }
+  sessionStorage.setItem("telegram_id", telegramId.value);
 });
-
 </script>
 
 <style scoped>
-.login-container {
-  max-width: 400px;
-  margin: 50px auto;
+.container {
+  max-width: 380px;
+  margin: 80px auto;
+  padding: 20px;
   text-align: center;
 }
-input {
-  padding: 8px;
-  margin: 10px 0;
-  width: 100%;
-  box-sizing: border-box;
-}
 button {
-  padding: 10px 20px;
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  font-size: 16px;
   cursor: pointer;
-  margin: 5px 0;
 }
-img {
-  border-radius: 50%;
-  margin: 10px 0;
+.error {
+  color: red;
+  margin-bottom: 15px;
+}
+.tid {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.verify-link {
+  display: block;
+  margin-top: 20px;
+  font-size: 16px;
+  color: blue;
 }
 </style>

@@ -181,7 +181,6 @@
 </template>
 
 <script setup>
-// NO CHANGES to the script block were needed.
 import { ref, computed, onMounted, watch } from "vue";
 import { useAuthStore } from "../store/authStore";
 import { useShoppingCartStore } from "../store/useShoppingCartStore";
@@ -191,33 +190,37 @@ const isMobileMenuOpen = ref(false);
 const authStore = useAuthStore();
 const cartStore = useShoppingCartStore();
 const API_URL = import.meta.env.VITE_API_URL;
+
 const cartCount = ref(0);
+
+// reactive user
 const user = computed(() => authStore.user);
 
+// Navbar links (no change)
 const navLinks = [
-  { to: '/', text: 'Home' },
-  { to: '/products', text: 'Products' },
-  { to: '/categories', text: 'Categories' },
-  { to: '/about', text: 'About' },
-  { to: '/contact', text: 'Contact Us' },
+  { to: "/", text: "Home" },
+  { to: "/products", text: "Products" },
+  { to: "/categories", text: "Categories" },
+  { to: "/about", text: "About" },
+  { to: "/contact", text: "Contact Us" },
 ];
 
 const mobileNavLinks = [
-  { to: '/', text: 'Home', icon: Home },
-  { to: '/products', text: 'Products', icon: Box },
-  { to: '/categories', text: 'Categories', icon: List },
-  { to: '/favorites', text: 'Favorites', icon: Heart },
-  { to: '/cart', text: 'Shopping Cart', icon: ShoppingCart },
-  { to: '/about', text: 'About', icon: Info },
-  { to: '/contact', text: 'Contact Us', icon: Phone },
+  { to: "/", text: "Home", icon: Home },
+  { to: "/products", text: "Products", icon: Box },
+  { to: "/categories", text: "Categories", icon: List },
+  { to: "/favorites", text: "Favorites", icon: Heart },
+  { to: "/cart", text: "Shopping Cart", icon: ShoppingCart },
+  { to: "/about", text: "About", icon: Info },
+  { to: "/contact", text: "Contact Us", icon: Phone },
 ];
 
 const updateCartCount = () => {
   if (!cartStore.cart || !cartStore.cart.items) {
     cartCount.value = 0;
-  } else {
-    cartCount.value = cartStore.cart.items.reduce((sum, item) => sum + item.qty, 0);
+    return;
   }
+  cartCount.value = cartStore.cart.items.reduce((sum, item) => sum + item.qty, 0);
 };
 
 const fetchCart = async () => {
@@ -227,9 +230,27 @@ const fetchCart = async () => {
   }
 };
 
-onMounted(fetchCart);
+onMounted(async () => {
+  // load auth from session storage
+  authStore.loadFromStorage();
 
-watch(() => cartStore.cart, () => { updateCartCount(); }, { deep: true });
+  // if token exists but no user in memory, fetch from backend (/auth/user)
+  if (authStore.token && !authStore.user) {
+    await authStore.loadUser();
+  }
+
+  // once user is ready, load cart
+  await fetchCart();
+});
+
+// update cart count when cart changes
+watch(
+  () => cartStore.cart,
+  () => updateCartCount(),
+  { deep: true }
+);
+
+// logout cleanup
 watch(user, (newUser) => {
   if (!newUser) {
     cartCount.value = 0;
@@ -237,5 +258,6 @@ watch(user, (newUser) => {
   }
 });
 </script>
+
 
 <!-- The <style scoped> block is no longer needed -->

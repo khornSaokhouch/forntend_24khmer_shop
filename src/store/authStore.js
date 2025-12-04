@@ -17,11 +17,28 @@ export const useAuthStore = defineStore("auth", {
       const token = sessionStorage.getItem("token");
       const user = sessionStorage.getItem("user");
       const telegramId = sessionStorage.getItem("telegram_id");
-      if (token && user) {
-        this.token = token;
+
+      if (token) this.token = token;
+      if (telegramId) this.telegramId = telegramId;
+
+      if (user) {
         this.user = JSON.parse(user);
-        this.telegramId = telegramId;
-        console.log("[authStore] Loaded from session:", this.user, this.token);
+        console.log("[authStore] Loaded from session:", this.user);
+      }
+    },
+
+    // NEW: load fresh user from backend
+    async loadUser() {
+      if (!this.token) return;
+
+      try {
+        const res = await api.get("/auth/user");
+        this.user = res.data.data;
+
+        sessionStorage.setItem("user", JSON.stringify(this.user));
+        console.log("[authStore] User refreshed:", this.user);
+      } catch (err) {
+        console.error("[authStore] loadUser error:", err);
       }
     },
 
@@ -30,6 +47,7 @@ export const useAuthStore = defineStore("auth", {
       console.log("[authStore] sendOtp called with Telegram ID:", telegramId);
       this.loading = true;
       this.error = null;
+
       try {
         const res = await api.post("/auth/send-otp", { telegram_id: telegramId });
         console.log("[authStore] OTP send response:", res.data);
@@ -44,13 +62,16 @@ export const useAuthStore = defineStore("auth", {
       }
     },
 
-    // Verify OTP and store JWT + user
+    // Verify OTP + save jwt
     async verifyOtp(telegramId, otp) {
-      console.log("[authStore] verifyOtp called with Telegram ID:", telegramId, "OTP:", otp);
+      console.log("[authStore] verifyOtp called:", telegramId, otp);
+
       this.loading = true;
       this.error = null;
+
       try {
         const res = await api.post("/auth/verify-otp", { telegram_id: telegramId, otp });
+
         this.user = res.data.data;
         this.token = res.data.token;
         this.telegramId = telegramId;
@@ -59,7 +80,7 @@ export const useAuthStore = defineStore("auth", {
         sessionStorage.setItem("token", this.token);
         sessionStorage.setItem("telegram_id", telegramId);
 
-        console.log("[authStore] OTP verified. User stored in session:", this.user);
+        console.log("[authStore] OTP verified:", this.user);
       } catch (err) {
         this.error = err.response?.data?.message || err.message;
         console.error("[authStore] verifyOtp error:", this.error);
@@ -70,9 +91,11 @@ export const useAuthStore = defineStore("auth", {
 
     logout() {
       console.log("[authStore] logout called");
+
       this.user = null;
       this.token = null;
       this.telegramId = null;
+
       sessionStorage.removeItem("user");
       sessionStorage.removeItem("token");
       sessionStorage.removeItem("telegram_id");
