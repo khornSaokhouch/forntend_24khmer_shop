@@ -2,7 +2,7 @@
   <div class="login-container">
     <h1>Login via Telegram</h1>
 
-    <!-- Error message if not in Telegram WebApp -->
+    <!-- Error message -->
     <div v-if="auth.error">
       <p style="color:red">{{ auth.error }}</p>
     </div>
@@ -13,7 +13,7 @@
       <p>Your Telegram ID: {{ telegramUser.id }}</p>
 
       <!-- Send OTP -->
-      <div v-if="!otpSent">
+      <div v-if="!otpSent && !auth.user">
         <button @click="requestOtp" :disabled="auth.loading">
           {{ auth.loading ? "Sending OTP..." : "Send OTP" }}
         </button>
@@ -41,7 +41,7 @@
 
     <!-- Loading state -->
     <div v-else>
-      <p>Loading Telegram WebApp user...</p>
+      <p>Loading Telegram user...</p>
     </div>
   </div>
 </template>
@@ -59,7 +59,6 @@ const otpSent = ref(false);
 const requestOtp = async () => {
   const telegramId = telegramUser.value?.id;
   if (!telegramId) return;
-  console.log("Requesting OTP for Telegram ID:", telegramId);
   await auth.sendOtp(telegramId);
   if (!auth.error) otpSent.value = true;
 };
@@ -68,10 +67,8 @@ const requestOtp = async () => {
 const verifyOtpCode = async () => {
   const telegramId = telegramUser.value?.id;
   if (!telegramId || !otp.value) return;
-  console.log("Verifying OTP for Telegram ID:", telegramId, "OTP:", otp.value);
   await auth.verifyOtp(telegramId, otp.value);
   if (!auth.error) {
-    console.log("Verified user data:", auth.user);
     alert(`Welcome ${auth.user.first_name}!`);
   }
 };
@@ -83,28 +80,29 @@ const logout = () => {
 };
 
 onMounted(async () => {
-  console.log("Login.vue mounted");
+  // Get telegram_id from URL query param
+  const urlParams = new URLSearchParams(window.location.search);
+  const telegramId = urlParams.get("telegram_id");
 
-  // Real Telegram WebApp
-  if (window.Telegram?.WebApp) {
-    window.Telegram.WebApp.ready();
-    telegramUser.value = window.Telegram.WebApp.initDataUnsafe.user;
-    console.log("Telegram WebApp user detected:", telegramUser.value);
+  if (!telegramId) {
+    auth.error = "Telegram ID not found. Please open this app from the Telegram bot.";
+    return;
+  }
 
-    sessionStorage.setItem("telegram_id", telegramUser.value.id);
+  // Store telegram_id in sessionStorage
+  sessionStorage.setItem("telegram_id", telegramId);
 
-    // Load existing token/user
-    auth.loadFromStorage();
+  // Create a minimal telegramUser object for display
+  telegramUser.value = { id: telegramId, first_name: "Telegram User" };
 
-    if (!auth.user) {
-      console.log("Auto-requesting OTP for returning user...");
-      await requestOtp();
-    } else {
-      otpSent.value = true; // already logged in
-    }
+  // Load existing user/token from storage
+  auth.loadFromStorage();
+
+  // Auto-request OTP if not logged in
+  if (!auth.user) {
+    await requestOtp();
   } else {
-    auth.error = "This app must be opened inside Telegram WebApp.";
-    console.warn("Telegram WebApp not detected.");
+    otpSent.value = true;
   }
 });
 </script>
