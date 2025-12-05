@@ -169,7 +169,7 @@ import {
 const route = useRoute();
 const authStore = useAuthStore();
 const cartStore = useShoppingCartStore();
-const API_URL = import.meta.env.VITE_API_URL || '';
+const API_URL = import.meta.env.PUBLIC_URL || '';
 
 // State
 const isSearchOpen = ref(false);
