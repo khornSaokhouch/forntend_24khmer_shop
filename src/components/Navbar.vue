@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- ============================================== -->
-    <!-- DESKTOP & TABLET TOP NAVBAR (Hidden on small mobile) -->
+    <!-- DESKTOP & TABLET TOP NAVBAR -->
     <!-- ============================================== -->
     <nav class="fixed top-0 inset-x-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 transition-all duration-300">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -33,7 +33,7 @@
           <!-- RIGHT: Utilities & Profile -->
           <div class="flex items-center gap-2 sm:gap-4">
             
-            <!-- Desktop Search Input -->
+            <!-- Desktop Search -->
             <div class="hidden lg:block relative group">
               <input 
                 type="text" 
@@ -42,6 +42,11 @@
               />
               <Search class="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5 pointer-events-none" />
             </div>
+
+            <!-- Mobile Search Toggle -->
+            <button @click="isSearchOpen = !isSearchOpen" class="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-full">
+              <Search class="w-6 h-6" />
+            </button>
 
             <!-- Actions (Desktop Only) -->
             <div class="hidden md:flex items-center gap-2">
@@ -103,20 +108,25 @@
       </div>
     </nav>
 
+    <!-- ============================================== -->
     <!-- MOBILE BOTTOM NAVIGATION -->
+    <!-- ============================================== -->
     <div class="md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-xl border-t border-slate-200 pb-safe z-50">
       <div class="flex justify-around items-center h-16 px-2">
         
+        <!-- 1. HOME -->
         <router-link to="/" class="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-500" active-class="text-indigo-600">
           <Home class="w-6 h-6" :class="{ 'fill-current': $route.path === '/' }" />
           <span class="text-[10px] font-medium">Home</span>
         </router-link>
 
+        <!-- 2. CATEGORIES -->
         <router-link to="/categories" class="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-500" active-class="text-indigo-600">
           <Grid class="w-6 h-6" :class="{ 'fill-current': $route.path === '/categories' }" />
           <span class="text-[10px] font-medium">Catg.</span>
         </router-link>
 
+        <!-- 3. CART (Center Floating) -->
         <div class="relative -top-5">
           <router-link to="/cart" class="flex items-center justify-center w-14 h-14 bg-indigo-600 rounded-full shadow-lg shadow-indigo-500/40 text-white transform transition-transform active:scale-95">
             <ShoppingCart class="w-6 h-6" />
@@ -126,6 +136,13 @@
           </router-link>
         </div>
 
+        <!-- 4. FAVORITES (Added This) -->
+        <router-link to="/favorites" class="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-500" active-class="text-pink-500">
+          <Heart class="w-6 h-6" :class="{ 'fill-current': $route.path === '/favorites' }" />
+          <span class="text-[10px] font-medium">Saved</span>
+        </router-link>
+
+        <!-- 5. PROFILE -->
         <router-link :to="user ? '/profile' : '/login'" class="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-500" active-class="text-indigo-600">
           <User class="w-6 h-6" :class="{ 'fill-current': $route.path === '/profile' }" />
           <span class="text-[10px] font-medium">{{ user ? 'Profile' : 'Login' }}</span>
