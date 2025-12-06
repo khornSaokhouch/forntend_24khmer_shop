@@ -9,7 +9,7 @@
     <div class="absolute top-1/2 left-1/2 w-80 h-80 bg-indigo-200/20 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2 float-animation" style="animation-delay: 4s;"></div> -->
 
     <!-- Main content -->
-    <div class="relative z-10 px-4">
+    <div class="relative z-10">
       <!-- 
         [ANIMATION] Each component is wrapped in a div that has:
         1. A `ref` to be observed (e.g., `ref="bannerSection"`).
@@ -18,13 +18,13 @@
       -->
       
       <!-- Banner Section -->
-      <!-- <div 
+      <div 
         ref="bannerSection"
         class="transition-all duration-700 ease-out"
         :class="isBannerVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'"
       >
         <BannerSwiper />
-      </div> -->
+      </div>
 
       <!-- Category Section -->
       <!-- <div 
@@ -60,7 +60,7 @@
 import { ref } from 'vue';
 import { useIntersectionObserver } from '@vueuse/core';
 // import Category from "../components/CategoryList.vue"; 
-// import BannerSwiper from "../components/BannerSwiper.vue";
+import BannerSwiper from "../components/BannerSwiper.vue";
 // import ProductListPage from "../components/ProductListPage.vue";
 // import ProductPromotion from "../components/ProductPromotion.vue";
 

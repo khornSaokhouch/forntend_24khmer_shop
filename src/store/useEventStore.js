@@ -9,19 +9,20 @@ export const useEventStore = defineStore("event", {
   }),
 
   actions: {
-    async fetchEvents(userId = null) {
+    async fetchEvents() {
       this.loading = true;
       this.error = "";
       try {
-        const url = userId ? `/events/?user_id=${userId}` : "/events/";
-        const res = await api.get(url);
+        const res = await api.get("/events");
+        console.log("Fetched events:", res.data); // debug
         this.events = res.data;
       } catch (err) {
-        this.error = err.response?.data?.detail || err.message || "Failed to fetch events";
+        this.error = err.response?.data?.message || err.message || "Failed to fetch events";
       } finally {
         this.loading = false;
       }
     },
+    
 
     async fetchEventById(id) {
       this.loading = true;
@@ -42,16 +43,16 @@ export const useEventStore = defineStore("event", {
       this.error = "";
       try {
         const formData = new FormData();
-        formData.append("title", eventData.title);
+        formData.append("name", eventData.name);
         formData.append(
           "start_date",
           eventData.start_date ? new Date(eventData.start_date).toISOString() : new Date().toISOString()
         );
-        formData.append(
-          "end_date",
-          eventData.end_date ? new Date(eventData.end_date).toISOString() : new Date().toISOString()
-        );
-        if (eventData.description) formData.append("description", eventData.description);
+        if (eventData.end_date)
+          formData.append("end_date", new Date(eventData.end_date).toISOString());
+        if (eventData.description)
+          formData.append("description", eventData.description);
+
         if (file) formData.append("event_image", file);
 
         await api.post("/events/", formData, {
@@ -72,10 +73,15 @@ export const useEventStore = defineStore("event", {
       this.error = "";
       try {
         const formData = new FormData();
-        if (eventData.title) formData.append("title", eventData.title);
-        if (eventData.start_date) formData.append("start_date", new Date(eventData.start_date).toISOString());
-        if (eventData.end_date) formData.append("end_date", new Date(eventData.end_date).toISOString());
-        if (eventData.description) formData.append("description", eventData.description);
+
+        if (eventData.name) formData.append("name", eventData.name);
+        if (eventData.start_date)
+          formData.append("start_date", new Date(eventData.start_date).toISOString());
+        if (eventData.end_date)
+          formData.append("end_date", new Date(eventData.end_date).toISOString());
+        if (eventData.description)
+          formData.append("description", eventData.description);
+
         if (file) formData.append("event_image", file);
 
         await api.put(`/events/${id}`, formData, {

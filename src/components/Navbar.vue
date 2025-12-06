@@ -10,7 +10,6 @@
           <!-- LEFT: Logo -->
           <router-link to="/" class="flex-shrink-0 flex items-center gap-2 group">
             <div class="relative w-10 h-10 flex items-center justify-center bg-indigo-600 rounded-xl shadow-lg shadow-indigo-500/30 group-hover:scale-105 transition-transform">
-              <!-- Replaced Image with Icon for demo reliability, put your <img> back here if needed -->
               <ShoppingBag class="text-white w-6 h-6" /> 
             </div>
             <span class="hidden sm:block font-bold text-xl tracking-tight text-slate-800">
@@ -44,12 +43,7 @@
               <Search class="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5 pointer-events-none" />
             </div>
 
-            <!-- Mobile Search Toggle (Visible only on mobile top bar) -->
-            <button @click="isSearchOpen = !isSearchOpen" class="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-full">
-              <Search class="w-6 h-6" />
-            </button>
-
-            <!-- Actions (Desktop Only - Mobile has Bottom Bar) -->
+            <!-- Actions (Desktop Only) -->
             <div class="hidden md:flex items-center gap-2">
               <router-link to="/favorites" class="p-2 text-slate-600 hover:text-pink-500 hover:bg-pink-50 rounded-full transition-colors relative">
                 <Heart class="w-6 h-6" />
@@ -69,12 +63,12 @@
                 <router-link to="/profile" class="flex items-center gap-2 group">
                   <div class="relative w-9 h-9 rounded-full overflow-hidden ring-2 ring-transparent group-hover:ring-indigo-500 transition-all bg-slate-200">
                     <img 
-                      v-if="user.profile_image" 
-                      :src="`${API_URL}/${user.profile_image}`" 
+                      v-if="user.image" 
+                      :src="user.image" 
                       class="w-full h-full object-cover"
                     />
                     <div v-else class="w-full h-full flex items-center justify-center bg-indigo-100 text-indigo-600 font-bold">
-                      {{ user.name?.charAt(0).toUpperCase() }}
+                      {{ user.first_name?.charAt(0).toUpperCase() }}
                     </div>
                   </div>
                 </router-link>
@@ -109,9 +103,7 @@
       </div>
     </nav>
 
-    <!-- ============================================== -->
-    <!-- MOBILE BOTTOM NAVIGATION (The "App" Feel) -->
-    <!-- ============================================== -->
+    <!-- MOBILE BOTTOM NAVIGATION -->
     <div class="md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-xl border-t border-slate-200 pb-safe z-50">
       <div class="flex justify-around items-center h-16 px-2">
         
@@ -125,7 +117,6 @@
           <span class="text-[10px] font-medium">Catg.</span>
         </router-link>
 
-        <!-- Center Cart Button (Floating Effect) -->
         <div class="relative -top-5">
           <router-link to="/cart" class="flex items-center justify-center w-14 h-14 bg-indigo-600 rounded-full shadow-lg shadow-indigo-500/40 text-white transform transition-transform active:scale-95">
             <ShoppingCart class="w-6 h-6" />
@@ -135,22 +126,15 @@
           </router-link>
         </div>
 
-        <router-link to="/favorites" class="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-500" active-class="text-pink-500">
-          <Heart class="w-6 h-6" :class="{ 'fill-current': $route.path === '/favorites' }" />
-          <span class="text-[10px] font-medium">Saved</span>
-        </router-link>
-
         <router-link :to="user ? '/profile' : '/login'" class="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-500" active-class="text-indigo-600">
           <User class="w-6 h-6" :class="{ 'fill-current': $route.path === '/profile' }" />
           <span class="text-[10px] font-medium">{{ user ? 'Profile' : 'Login' }}</span>
         </router-link>
 
       </div>
-      <!-- Safe Area Spacing for iPhone X+ -->
       <div class="h-1 bg-transparent w-full"></div>
     </div>
     
-    <!-- Spacer to prevent content hiding behind fixed navs -->
     <div class="h-16 md:h-20"></div>
   </div>
 </template>
@@ -160,7 +144,6 @@ import { ref, computed, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useAuthStore } from "../store/authStore";
 import { useShoppingCartStore } from "../store/useShoppingCartStore";
-// Imported Lucide Icons - Ensure you have lucide-vue-next installed
 import { 
   Search, Heart, ShoppingCart, Home, 
   ShoppingBag, User, Grid, ArrowRight, X 
@@ -169,16 +152,11 @@ import {
 const route = useRoute();
 const authStore = useAuthStore();
 const cartStore = useShoppingCartStore();
-const API_URL = import.meta.env.PUBLIC_URL || '';
 
-// State
 const isSearchOpen = ref(false);
 const cartCount = ref(0);
-
-// Computed
 const user = computed(() => authStore.user);
 
-// Links Configuration
 const navLinks = [
   { to: "/", text: "Home" },
   { to: "/products", text: "Shop" },
@@ -186,26 +164,19 @@ const navLinks = [
   { to: "/about", text: "About" },
 ];
 
-// Logic to calculate cart items
 const updateCartCount = () => {
-  // Safe navigation (?.) ensures app doesn't crash if cart is null
   const items = cartStore.cart?.items || [];
   cartCount.value = items.reduce((sum, item) => sum + (item.qty || 0), 0);
 };
 
-// Fetch data
 const initData = async () => {
-  try {
-    authStore.loadFromStorage();
-    if (authStore.token && !authStore.user) {
-      await authStore.loadUser();
-    }
-    if (authStore.user) {
-      await cartStore.fetchCart();
-      updateCartCount();
-    }
-  } catch (error) {
-    console.error("Nav init error:", error);
+  authStore.loadFromStorage();
+  if (authStore.token && !authStore.user) {
+    await authStore.loadUser();
+  }
+  if (authStore.user) {
+    await cartStore.fetchCart();
+    updateCartCount();
   }
 };
 
@@ -213,22 +184,16 @@ onMounted(() => {
   initData();
 });
 
-// Watchers for reactivity
 watch(() => cartStore.cart, updateCartCount, { deep: true });
-
-// Close search when route changes
-watch(() => route.path, () => {
-  isSearchOpen.value = false;
-});
-
-// Reset when user logs out
 watch(user, (newUser) => {
   if (!newUser) cartCount.value = 0;
+});
+watch(() => route.path, () => {
+  isSearchOpen.value = false;
 });
 </script>
 
 <style scoped>
-/* Utility for iPhone Safe Area in bottom nav */
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom);
 }
