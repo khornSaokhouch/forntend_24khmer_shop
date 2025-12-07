@@ -7,9 +7,7 @@
           My Profile
         </span>
       </h1>
-      <p class="text-slate-600">
-        View your account information below.
-      </p>
+      <p class="text-slate-600">View your account information below.</p>
     </div>
 
     <!-- Loading State -->
@@ -26,10 +24,11 @@
           <div class="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 p-1 shadow-md">
             <div class="w-full h-full rounded-full overflow-hidden bg-white flex items-center justify-center">
               <img 
-                v-if="authStore.user.profile_image" 
-                :src="`${API_URL}/${authStore.user.profile_image}`" 
+                v-if="userImage" 
+                :src="userImage" 
                 class="w-full h-full object-cover" 
                 alt="Profile Image"
+                @click="openModal"
               />
               <span v-else class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
                 {{ authStore.user.name.charAt(0) }}
@@ -86,7 +85,7 @@
           <button @click="closeModal" class="absolute top-2 right-2 text-white bg-red-500 rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-600 transition">
             ✕
           </button>
-          <img :src="`${API_URL}/${authStore.user.profile_image}`" alt="Profile Full Image" class="w-full h-auto object-cover"/>
+          <img :src="userImage" alt="Profile Full Image" class="w-full h-auto object-cover"/>
         </div>
       </div>
     </transition>
@@ -94,19 +93,27 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useAuthStore } from "../../store/authStore";
 
 const authStore = useAuthStore();
-const API_URL = import.meta.env.VITE_API_URL;
-
 const showModal = ref(false);
+
 function openModal() {
-  if (authStore.user?.profile_image) showModal.value = true;
+  if (userImage.value) showModal.value = true;
 }
 function closeModal() {
   showModal.value = false;
 }
+
+// Full URL for profile image
+const userImage = computed(() => {
+  const user = authStore.user;
+  if (!user?.image) return null;
+  return user.image.startsWith("http")
+    ? user.image
+    : `${import.meta.env.VITE_API_URL}/${user.image}`;
+});
 
 // Format ISO date strings
 function formatDate(isoString) {
