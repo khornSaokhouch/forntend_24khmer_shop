@@ -128,6 +128,8 @@ const eventStore = useEventStore();
 // Fetch events on mount
 onMounted(() => {
   eventStore.fetchEvents();
+  console.log("Fetching events for BannerSwiper", eventStore.events);
+
 });
 
 // Featured events (duplicate slides for smooth RTL loop)

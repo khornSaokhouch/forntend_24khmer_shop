@@ -68,8 +68,8 @@
                 <router-link to="/profile" class="flex items-center gap-2 group">
                   <div class="relative w-9 h-9 rounded-full overflow-hidden ring-2 ring-transparent group-hover:ring-indigo-500 transition-all bg-slate-200">
                     <img 
-                      v-if="user.image" 
-                      :src="user.image" 
+                      v-if="user.userImage" 
+                      :src="user.userImage" 
                       class="w-full h-full object-cover"
                     />
                     <div v-else class="w-full h-full flex items-center justify-center bg-indigo-100 text-indigo-600 font-bold">
@@ -185,6 +185,12 @@ const updateCartCount = () => {
   const items = cartStore.cart?.items || [];
   cartCount.value = items.reduce((sum, item) => sum + (item.qty || 0), 0);
 };
+
+const userImage = computed(() => {
+  if (!user.value?.image) return null;
+  return `${import.meta.env.VITE_API_URL}/${user.value.image}`;
+});
+
 
 const initData = async () => {
   authStore.loadFromStorage();
