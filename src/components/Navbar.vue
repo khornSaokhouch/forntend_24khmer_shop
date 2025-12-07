@@ -68,8 +68,9 @@
                 <router-link to="/profile" class="flex items-center gap-2 group">
                   <div class="relative w-9 h-9 rounded-full overflow-hidden ring-2 ring-transparent group-hover:ring-indigo-500 transition-all bg-slate-200">
                     <img 
-                      v-if="user.userImage" 
-                      :src="user.userImage" 
+                      v-if="userImage" 
+                      :src="userImage" 
+                      alt="Profile" 
                       class="w-full h-full object-cover"
                     />
                     <div v-else class="w-full h-full flex items-center justify-center bg-indigo-100 text-indigo-600 font-bold">
@@ -136,7 +137,7 @@
           </router-link>
         </div>
 
-        <!-- 4. FAVORITES (Added This) -->
+        <!-- 4. FAVORITES -->
         <router-link to="/favorites" class="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-500" active-class="text-pink-500">
           <Heart class="w-6 h-6" :class="{ 'fill-current': $route.path === '/favorites' }" />
           <span class="text-[10px] font-medium">Saved</span>
@@ -144,7 +145,15 @@
 
         <!-- 5. PROFILE -->
         <router-link :to="user ? '/profile' : '/login'" class="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-500" active-class="text-indigo-600">
-          <User class="w-6 h-6" :class="{ 'fill-current': $route.path === '/profile' }" />
+          <div class="relative w-6 h-6">
+            <img 
+              v-if="userImage" 
+              :src="userImage" 
+              alt="Profile" 
+              class="w-full h-full object-cover rounded-full"
+            />
+            <User v-else class="w-6 h-6" />
+          </div>
           <span class="text-[10px] font-medium">{{ user ? 'Profile' : 'Login' }}</span>
         </router-link>
 
@@ -186,11 +195,11 @@ const updateCartCount = () => {
   cartCount.value = items.reduce((sum, item) => sum + (item.qty || 0), 0);
 };
 
+// Computed for profile image
 const userImage = computed(() => {
   if (!user.value?.image) return null;
-  return import.meta.env.VITE_API_URL + "/" + user.value.image;
+  return user.value.image.startsWith("http") ? user.value.image : import.meta.env.VITE_API_URL + "/" + user.value.image;
 });
-
 
 const initData = async () => {
   authStore.loadFromStorage();
@@ -220,7 +229,4 @@ watch(() => route.path, () => {
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom);
 }
-</style>  
-
-
-i want show profile keep my uui 
+</style>
