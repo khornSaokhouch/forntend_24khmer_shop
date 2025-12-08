@@ -1,35 +1,41 @@
 <template>
-  <div class="min-h-screen flex flex-col bg-white font-sans text-slate-800">
+  <div class="min-h-screen flex flex-col font-sans text-slate-800 relative selection:bg-indigo-100 selection:text-indigo-700">
+    
+    <!-- Background Texture (Optional subtle dot pattern) -->
+    <div class="fixed inset-0 z-0 opacity-[0.4] pointer-events-none" 
+         style="background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 24px 24px;">
+    </div>
+
     <!-- Navbar Component -->
     <Navbar />
 
     <!-- 
       MAIN CONTENT WRAPPER 
-      pt-16 md:pt-20: Pushes content down so it doesn't hide behind fixed Top Nav
-      pb-20 md:pb-0: Pushes content up on mobile so it doesn't hide behind Bottom Nav
+      z-10 ensures content is above the background pattern
     -->
-    <main class="flex-grow pt-16 md:pt-20 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
+    <main class="flex-grow pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0 relative z-10">
       <div class="w-full max-w-7xl mx-auto">
-        <!-- Route transition for smooth page switching -->
+        
+        <!-- Smooth Route Transitions -->
         <router-view v-slot="{ Component }">
           <transition 
-            enter-active-class="transition ease-out duration-200" 
-            enter-from-class="opacity-0 translate-y-2" 
-            enter-to-class="opacity-100 translate-y-0" 
-            leave-active-class="transition ease-in duration-150" 
-            leave-from-class="opacity-100 translate-y-0" 
-            leave-to-class="opacity-0 -translate-y-2"
             mode="out-in"
+            enter-active-class="transition-all duration-300 ease-out" 
+            enter-from-class="opacity-0 translate-y-4 scale-[0.98]" 
+            enter-to-class="opacity-100 translate-y-0 scale-100" 
+            leave-active-class="transition-all duration-200 ease-in" 
+            leave-from-class="opacity-100 translate-y-0 scale-100" 
+            leave-to-class="opacity-0 -translate-y-4 scale-[0.98]"
           >
             <component :is="Component" />
           </transition>
         </router-view>
+
       </div>
     </main>
 
-    <!-- Footer is hidden on very small screens if you want a true "App" feel, 
-         but usually kept for SEO/Links. -->
-    <Footer class="mb-[calc(4rem+env(safe-area-inset-bottom))] md:mb-0" />
+    <!-- Desktop Footer -->
+    <Footer class="relative z-10 mb-[calc(4rem+env(safe-area-inset-bottom))] md:mb-0" />
   </div>
 </template>
 

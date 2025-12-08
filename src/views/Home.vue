@@ -1,13 +1,5 @@
 <template>
   <div class="relative min-h-screen overflow-hidden">
-    <!-- 
-      Decorative Floating Shapes 
-      [ANIMATION] Added the `float-animation` class you defined to make the background elements move.
-    -->
-    <!-- <div class="absolute top-0 left-0 w-72 h-72 bg-blue-300/20 rounded-full blur-3xl -translate-x-1/3 -translate-y-1/3 float-animation" style="animation-delay: 0s;"></div>
-    <div class="absolute bottom-0 right-0 w-96 h-96 bg-cyan-300/30 rounded-full blur-3xl translate-x-1/4 translate-y-1/4 float-animation" style="animation-delay: 2s;"></div>
-    <div class="absolute top-1/2 left-1/2 w-80 h-80 bg-indigo-200/20 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2 float-animation" style="animation-delay: 4s;"></div> -->
-
     <!-- Main content -->
     <div class="relative z-10">
       <!-- 
@@ -16,50 +8,27 @@
         2. Transition classes (`transition-all...`).
         3. Conditional classes for the visible/hidden state.
       -->
-      
+
       <!-- Banner Section -->
-      <div 
+      <div
         ref="bannerSection"
         class="transition-all duration-700 ease-out"
-        :class="isBannerVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'"
+        :class="
+          isBannerVisible
+            ? 'opacity-100 translate-y-0'
+            : 'opacity-0 translate-y-10'
+        "
       >
         <BannerSwiper />
       </div>
-
-      <!-- Category Section -->
-      <!-- <div 
-        ref="categorySection"
-        class="transition-all duration-700 ease-out delay-100"
-        :class="isCategoryVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'"
-      >
-        <Category />
-      </div> -->
-
-      <!-- Product List Section -->
-      <!-- <div 
-        ref="productListSection"
-        class="transition-all duration-700 ease-out delay-100"
-        :class="isProductListVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'"
-      >
-        <ProductListPage />
-      </div> -->
-
-      <!-- Promotion Section -->
-      <!-- <div 
-        ref="promotionSection"
-        class="py-16 transition-all duration-700 ease-out delay-100"
-        :class="isPromotionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'"
-      >
-        <ProductPromotion />
-      </div> -->
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useIntersectionObserver } from '@vueuse/core';
-// import Category from "../components/CategoryList.vue"; 
+import { ref } from "vue";
+import { useIntersectionObserver } from "@vueuse/core";
+// import Category from "../components/CategoryList.vue";
 import BannerSwiper from "../components/BannerSwiper.vue";
 // import ProductListPage from "../components/ProductListPage.vue";
 // import ProductPromotion from "../components/ProductPromotion.vue";
@@ -101,14 +70,18 @@ createObserver(bannerSection, isBannerVisible);
 createObserver(categorySection, isCategoryVisible);
 createObserver(productListSection, isProductListVisible);
 createObserver(promotionSection, isPromotionVisible);
-
 </script>
 
 <style scoped>
 /* This keyframe animation will make elements gently float up and down */
 @keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(3deg); }
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(3deg);
+  }
 }
 
 .float-animation {
