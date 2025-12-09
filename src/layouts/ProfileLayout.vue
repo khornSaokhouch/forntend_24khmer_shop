@@ -1,11 +1,11 @@
 <template>
-  <div class="min-h-screen flex flex-col ">
+  <div class="min-h-screen flex flex-col bg-gray-100">
     <!-- Navbar -->
     <Navbar />
 
     <div class="flex-grow pt-5 pb-24 md:pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
       <div class="flex flex-col md:flex-row gap-6 lg:gap-8 h-full">
-        
+
         <!-- SIDEBAR (Desktop Only) -->
         <aside class="hidden md:block w-72 flex-shrink-0 space-y-6">
           
@@ -78,7 +78,7 @@
                  </div>
                </div>
                <div>
-                 <!-- MOBILE NAME DISPLAY (Fixed) -->
+                 <!-- MOBILE NAME DISPLAY -->
                  <h2 class="text-lg font-bold text-slate-900 leading-tight">
                     {{ authStore.user?.first_name }} {{ authStore.user?.last_name }}
                  </h2>
@@ -158,7 +158,7 @@ import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../store/authStore";
 import Navbar from "../components/Navbar.vue";
-import { User, ShoppingBag, Heart, Shield, LogOut, Edit  } from "lucide-vue-next";
+import { User, ShoppingBag, Heart, Shield, LogOut, Edit } from "lucide-vue-next";
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -185,6 +185,10 @@ const handleLogout = () => {
 </script>
 
 <style>
+body {
+  background-color: #f8fafc;
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
