@@ -95,17 +95,35 @@ export const useAuthStore = defineStore("auth", {
       }
     },
 
-    logout() {
+    async logout() {
       console.log("[authStore] logout called");
-
+    
+      if (this.token) {
+        try {
+          await api.post(
+            "/auth/logout",
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${this.token}`,
+              },
+            }
+          );
+          console.log("[authStore] Backend logout successful");
+        } catch (err) {
+          console.error("[authStore] Backend logout error:", err.response?.data || err.message);
+        }
+      }
+    
+      // Clear local state and storage
       this.user = null;
       this.token = null;
       this.telegramId = null;
-
-      // remove persistent data
+    
       localStorage.removeItem("user");
       localStorage.removeItem("token");
       localStorage.removeItem("telegram_id");
     },
+    
   },
 });
