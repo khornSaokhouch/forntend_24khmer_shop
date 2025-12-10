@@ -46,7 +46,7 @@
         >
           <!-- Card Container -->
           <div
-            class="relative w-full aspect-[4/3] md:aspect-[21/9] rounded-[2rem] overflow-hidden shadow-xl shadow-indigo-900/30 bg-slate-900 isolate group hover:shadow-2xl transition-shadow duration-500"
+            class="relative w-full h-[200px] md:h-[400px] rounded-[2rem] overflow-hidden shadow-xl shadow-indigo-900/30 bg-slate-900 isolate group hover:shadow-2xl transition-shadow duration-500"
           >
             <!-- Image with smooth zoom on hover -->
             <div class="absolute inset-0 overflow-hidden">

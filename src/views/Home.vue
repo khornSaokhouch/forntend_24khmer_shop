@@ -21,6 +21,21 @@
       >
         <BannerSwiper />
       </div>
+
+
+      <!-- Category Section -->
+
+        <div
+          ref="categorySection"
+          class="transition-all duration-700 ease-out delay-100"
+          :class="
+            isCategoryVisible
+              ? 'opacity-100 translate-y-0'
+              : 'opacity-0 translate-y-10'
+          "
+        >
+          <Category />
+        </div>
     </div>
   </div>
 </template>
@@ -28,7 +43,7 @@
 <script setup>
 import { ref } from "vue";
 import { useIntersectionObserver } from "@vueuse/core";
-// import Category from "../components/CategoryList.vue";
+import Category from "../components/CategoryList.vue";
 import BannerSwiper from "../components/BannerSwiper.vue";
 // import ProductListPage from "../components/ProductListPage.vue";
 // import ProductPromotion from "../components/ProductPromotion.vue";

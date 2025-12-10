@@ -11,28 +11,45 @@ export const useUserStore = defineStore("user", {
     // Fetch all users
     async fetchUsers() {
       this.loading = true;
+      this.error = null;
+
       try {
         const res = await api.get("/users/");
-        this.users = res.data;
+        this.users = res.data.data || [];
       } catch (err) {
-        this.error = err.response?.data?.detail || err.message;
+        this.error = err.response?.data?.message || err.message;
       } finally {
         this.loading = false;
       }
     },
 
-    // Delete a user
-    async deleteUser(userId) {
+    // Fetch a single user
+    async fetchUser(userId) {
+      this.loading = true;
+      this.error = null;
+
       try {
-        await api.delete(`/users/${userId}`);
-        this.users = this.users.filter(u => u.id !== userId);
+        const res = await api.get(`/users/${userId}`);
+        const user = res.data.data;
+
+        const index = this.users.findIndex(u => u._id === userId);
+        if (index !== -1) this.users[index] = { ...this.users[index], ...user };
+        else this.users.push(user);
+
+        return user;
       } catch (err) {
-        this.error = err.response?.data?.detail || err.message;
+        this.error = err.response?.data?.message || err.message;
+        throw err;
+      } finally {
+        this.loading = false;
       }
     },
 
     // Update a user
     async updateUser(userId, userData, profileImageFile = null) {
+      this.loading = true;
+      this.error = null;
+
       const formData = new FormData();
       for (const key in userData) formData.append(key, userData[key]);
       if (profileImageFile) formData.append("profile_image", profileImageFile);
@@ -42,38 +59,34 @@ export const useUserStore = defineStore("user", {
           headers: { "Content-Type": "multipart/form-data" },
         });
 
-        const updatedUser = res.data;
+        const updatedUser = res.data.data;
 
-        // Update local users array reactively
-        const index = this.users.findIndex(u => u.id === userId);
-        if (index !== -1) {
-          this.users[index] = { ...this.users[index], ...updatedUser };
-        } else {
-          this.users.push(updatedUser);
-        }
+        const index = this.users.findIndex(u => u._id === userId);
+        if (index !== -1) this.users[index] = { ...this.users[index], ...updatedUser };
+        else this.users.push(updatedUser);
 
-        // Return updated user for immediate UI update
         return updatedUser;
       } catch (err) {
-        this.error = err.response?.data?.detail || err.message;
-        throw err; // UI can catch and show toast
+        this.error = err.response?.data?.message || err.message;
+        throw err;
+      } finally {
+        this.loading = false;
       }
     },
 
-    // Fetch a single user (optional)
-    async fetchUser(userId) {
+    // Delete a user
+    async deleteUser(userId) {
+      this.loading = true;
+      this.error = null;
+
       try {
-        const res = await api.get(`/users/${userId}`);
-        const user = res.data;
-
-        const index = this.users.findIndex(u => u.id === userId);
-        if (index !== -1) this.users[index] = { ...this.users[index], ...user };
-        else this.users.push(user);
-
-        return user;
+        await api.delete(`/users/${userId}`);
+        this.users = this.users.filter(u => u._id !== userId);
       } catch (err) {
-        this.error = err.response?.data?.detail || err.message;
+        this.error = err.response?.data?.message || err.message;
         throw err;
+      } finally {
+        this.loading = false;
       }
     },
   },

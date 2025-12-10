@@ -1,7 +1,10 @@
+// src/store/authStore.js
 import { defineStore } from "pinia";
 import api from "@/services/api.js";
 
 export const useAuthStore = defineStore("auth", {
+  id: "auth", // optional, but good practice
+
   state: () => ({
     user: null,
     token: null,
@@ -11,52 +14,38 @@ export const useAuthStore = defineStore("auth", {
   }),
 
   actions: {
-    // Load token / user from localStorage (persistent)
-    loadFromStorage() {
-      console.log("[authStore] loadFromStorage called");
-
-      const token = localStorage.getItem("token");
-      const user = localStorage.getItem("user");
-      const telegramId = localStorage.getItem("telegram_id");
-
-      if (token) this.token = token;
-      if (telegramId) this.telegramId = telegramId;
-
-      if (user) {
-        this.user = JSON.parse(user);
-        console.log("[authStore] Loaded from storage:", this.user);
-      }
-    },
-
     // Fetch fresh user from backend
     async loadUser() {
-      if (!this.token) return;
+      if (!this.token) return; // token is required
+
+      this.loading = true;
+      this.error = null;
 
       try {
-        const res = await api.get("/auth/user");
+        const res = await api.get("/auth/user", {
+          headers: { Authorization: `Bearer ${this.token}` },
+        });
+
         this.user = res.data.data;
-
-        localStorage.setItem("user", JSON.stringify(this.user));
-
         console.log("[authStore] User refreshed:", this.user);
       } catch (err) {
-        console.error("[authStore] loadUser error:", err);
+        console.error("[authStore] loadUser error:", err.response?.data || err.message);
+        this.error = err.response?.data?.message || err.message;
+      } finally {
+        this.loading = false;
       }
     },
 
-    // Send OTP
+    // Send OTP to Telegram ID
     async sendOtp(telegramId) {
-      console.log("[authStore] sendOtp called with Telegram ID:", telegramId);
       this.loading = true;
       this.error = null;
 
       try {
         const res = await api.post("/auth/send-otp", { telegram_id: telegramId });
 
-        console.log("[authStore] OTP send response:", res.data);
-
-        localStorage.setItem("telegram_id", telegramId);
         this.telegramId = telegramId;
+        console.log("[authStore] OTP sent:", res.data);
 
         return res.data;
       } catch (err) {
@@ -69,8 +58,6 @@ export const useAuthStore = defineStore("auth", {
 
     // Verify OTP and store JWT + user
     async verifyOtp(telegramId, otp) {
-      console.log("[authStore] verifyOtp called:", telegramId, otp);
-
       this.loading = true;
       this.error = null;
 
@@ -81,11 +68,6 @@ export const useAuthStore = defineStore("auth", {
         this.token = res.data.token;
         this.telegramId = telegramId;
 
-        // Save persistent
-        localStorage.setItem("user", JSON.stringify(this.user));
-        localStorage.setItem("token", this.token);
-        localStorage.setItem("telegram_id", telegramId);
-
         console.log("[authStore] OTP verified:", this.user);
       } catch (err) {
         this.error = err.response?.data?.message || err.message;
@@ -95,35 +77,30 @@ export const useAuthStore = defineStore("auth", {
       }
     },
 
+    // Logout user
     async logout() {
-      console.log("[authStore] logout called");
-    
       if (this.token) {
         try {
-          await api.post(
-            "/auth/logout",
-            {},
-            {
-              headers: {
-                Authorization: `Bearer ${this.token}`,
-              },
-            }
-          );
+          await api.post("/auth/logout", {}, {
+            headers: { Authorization: `Bearer ${this.token}` },
+          });
           console.log("[authStore] Backend logout successful");
         } catch (err) {
           console.error("[authStore] Backend logout error:", err.response?.data || err.message);
         }
       }
-    
-      // Clear local state and storage
+
+      // Clear local state
       this.user = null;
       this.token = null;
       this.telegramId = null;
-    
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
-      localStorage.removeItem("telegram_id");
+      this.error = null;
     },
-    
+  },
+
+  persist: {
+    key: "auth",
+    storage: localStorage,
+    paths: ["token", "user", "telegramId"], // only persist these
   },
 });

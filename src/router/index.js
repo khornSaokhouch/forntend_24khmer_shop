@@ -92,29 +92,29 @@ const router = createRouter({
   routes,
 });
 
-// Route guard
-router.beforeEach((to, from, next) => {
-  const authStore = useAuthStore();
-  authStore.loadFromStorage(); // Load token & user from sessionStorage
-  const token = authStore.token;
+// // Route guard
+// router.beforeEach((to, from, next) => {
+//   const authStore = useAuthStore();
+//   authStore.loadFromStorage(); // Load token & user from sessionStorage
+//   const token = authStore.token;
 
-  // Redirect authenticated users away from login/register
-  if (to.path === "/login" || to.path === "/register") {
-    if (token) {
-      // Admin -> dashboard, User -> home
-      next(authStore.user?.role === "admin" ? "/dashboard" : "/");
-    } else {
-      next();
-    }
-  } else if (
-    // Protect admin & profile routes
-    (to.path.startsWith("/dashboard") || to.path.startsWith("/profile")) &&
-    !token
-  ) {
-    next("/login");
-  } else {
-    next();
-  }
-});
+//   // Redirect authenticated users away from login/register
+//   if (to.path === "/login" || to.path === "/register") {
+//     if (token) {
+//       // Admin -> dashboard, User -> home
+//       next(authStore.user?.role === "admin" ? "/dashboard" : "/");
+//     } else {
+//       next();
+//     }
+//   } else if (
+//     // Protect admin & profile routes
+//     (to.path.startsWith("/dashboard") || to.path.startsWith("/profile")) &&
+//     !token
+//   ) {
+//     next("/login");
+//   } else {
+//     next();
+//   }
+// });
 
 export default router;

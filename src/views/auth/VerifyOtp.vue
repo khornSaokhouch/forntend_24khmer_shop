@@ -79,16 +79,22 @@ const telegramId = ref(null);
 const otp = ref("");
 
 const verifyOtp = async () => {
-  if(!otp.value) return;
-  
+  if (!otp.value) return;
+
   await auth.verifyOtp(telegramId.value, otp.value);
 
-  // Success Check
   if (!auth.error) {
-    // Optional: Add a success toast here if you have a toast library
-    router.push("/"); // Redirect to Home
+    // Check role
+    const role = auth.user?.role; // assuming your authStore stores the logged-in user
+
+    if (role === "admin") {
+      router.push("/dashboard");
+    } else {
+      router.push("/");
+    }
   }
 };
+
 
 const goBack = () => {
   router.push({ name: 'login', query: { telegram_id: telegramId.value } });
