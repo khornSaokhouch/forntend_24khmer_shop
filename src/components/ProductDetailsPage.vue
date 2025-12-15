@@ -1,123 +1,178 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-white via-gray-50 to-gray-100 relative overflow-hidden">
-    <!-- Background decorative elements -->
-    <div class="absolute inset-0 overflow-hidden">
-      <div class="absolute top-20 left-10 w-32 h-32 bg-gray-100 rounded-full blur-3xl animate-pulse"></div>
-      <div class="absolute bottom-20 right-10 w-40 h-40 bg-gray-100 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gray-100/20 rounded-full blur-3xl animate-pulse delay-500"></div>
-    </div>
-
-    <div class="relative z-10 max-w-7xl mx-auto p-6">
-      <!-- Back Button -->
+  <div class="min-h-screen bg-slate-50/50 relative">
+    
+    <!-- Navigation / Breadcrumb Area -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-4">
       <button 
         @click="$router.back()" 
-        class="mb-8 group flex items-center space-x-2 px-6 py-3 bg-white/90 backdrop-blur-xl border border-gray-200 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+        class="group inline-flex items-center space-x-2 text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors"
       >
-        <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-        </svg>
-        <span>Back to Products</span>
+        <div class="p-1.5 rounded-full bg-white border border-slate-200 group-hover:border-blue-200 group-hover:bg-blue-50 transition-colors shadow-sm">
+          <svg class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        </div>
+        <span>Back to collection</span>
       </button>
+    </div>
 
-      <!-- Product Card -->
-      <div v-if="product && product.id" class="bg-white/90 backdrop-blur-xl border border-gray-200 rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row">
-        <!-- Image Section -->
-        <div class="lg:w-1/2 p-8">
-          <div class="relative group">
-            <div class="absolute inset-0 bg-gray-100 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-            <div class="relative bg-white/95 backdrop-blur-sm rounded-2xl p-4 border border-gray-200">
+    <!-- Main Content -->
+    <div v-if="product._id" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+      <div class="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16">
+        
+        <!-- Left Column: Image Gallery (Sticky on Desktop) -->
+        <div class="mb-10 lg:mb-0">
+          <div class="lg:sticky lg:top-8 space-y-4">
+            <div class="relative aspect-[4/5] sm:aspect-square bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 group">
+              <!-- Discount Badge -->
+              <div v-if="product.discount && product.discount > 0" class="absolute top-4 left-4 z-10">
+                <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-white bg-rose-500 shadow-lg shadow-rose-500/30">
+                  Save {{ product.discount }}%
+                </span>
+              </div>
+              
               <img
-                :src="product.product_image ? `${API_URL}/${product.product_image}` : '/placeholder.png'"
-                alt="product"
-                class="w-full h-auto object-cover rounded-xl group-hover:scale-105 transition-transform duration-500"
+                :src="product.image_product || '/placeholder.png'"
+                :alt="product.name"
+                class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
               />
-             <!-- Discount Badge -->
-<div v-if="product.discount && product.discount > 0" class="absolute top-4 left-4 bg-red-500 text-white text-sm font-bold px-3 py-1 rounded-full shadow-lg">
-  -{{ product.discount }}%
-</div>
+            </div>
+            
+            <!-- Trust Badges (Optional Visual Flair) -->
+            <div class="grid grid-cols-3 gap-4 py-4">
+              <div class="flex flex-col items-center justify-center p-3 rounded-2xl bg-white border border-slate-100 shadow-sm text-center">
+                <svg class="w-6 h-6 text-blue-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span class="text-[10px] font-bold text-slate-600 uppercase tracking-wide">Authentic</span>
+              </div>
+              <div class="flex flex-col items-center justify-center p-3 rounded-2xl bg-white border border-slate-100 shadow-sm text-center">
+                 <svg class="w-6 h-6 text-blue-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                <span class="text-[10px] font-bold text-slate-600 uppercase tracking-wide">Premium</span>
+              </div>
+              <div class="flex flex-col items-center justify-center p-3 rounded-2xl bg-white border border-slate-100 shadow-sm text-center">
+                 <svg class="w-6 h-6 text-blue-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span class="text-[10px] font-bold text-slate-600 uppercase tracking-wide">Fast Ship</span>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Details Section -->
-        <div class="lg:w-1/2 p-8 flex flex-col justify-between space-y-6">
+        <!-- Right Column: Product Details -->
+        <div class="flex flex-col">
+          <!-- Category Label -->
+          <span v-if="product.category_id" class="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-2">
+            {{ product.category_id.name }}
+          </span>
+
           <!-- Title -->
-          <h1 class="text-4xl font-bold text-gray-900 leading-tight">
-            {{ product.product_name }}
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight mb-4">
+            {{ product.name }}
           </h1>
 
-          <!-- Price & Discount -->
-          <div class="flex items-center space-x-4">
-            <span v-if="product.discount && product.discount > 0" class="text-3xl font-bold text-gray-900 line-through">
-              ${{ product.price }}
-            </span>
-            <span class="text-3xl font-bold text-gray-900">
-              ${{ discountedPrice(product.price, product.discount) }}
-            </span>
-            <div class="px-3 py-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-sm font-medium rounded-full">
-              Premium Quality
+          <!-- Price & Stock Row -->
+          <div class="flex items-center flex-wrap gap-4 mb-8">
+            <div class="flex items-baseline gap-3">
+              <span class="text-4xl font-bold text-slate-900">
+                ${{ discountedPrice(product.price, product.discount) }}
+              </span>
+              <span v-if="product.discount > 0" class="text-xl text-slate-400 line-through decoration-slate-400/50">
+                ${{ Number(product.price).toFixed(2) }}
+              </span>
             </div>
-          </div>
+            
+            <div class="h-6 w-px bg-slate-300 mx-2 hidden sm:block"></div>
 
-          <!-- Stock Status -->
-          <div class="flex items-center space-x-2">
-            <div :class="product.stock > 0 ? 'w-3 h-3 bg-green-500 rounded-full animate-pulse' : 'w-3 h-3 bg-red-500 rounded-full'"></div>
-            <p :class="product.stock > 0 ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'">
-              {{ product.stock > 0 ? `In Stock (${product.stock} available)` : 'Out of Stock' }}
-            </p>
+            <div class="flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200">
+              <span class="relative flex h-2.5 w-2.5">
+                <span v-if="product.stock > 0" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5" :class="product.stock > 0 ? 'bg-green-500' : 'bg-red-500'"></span>
+              </span>
+              <span class="text-sm font-medium" :class="product.stock > 0 ? 'text-green-700' : 'text-red-700'">
+                {{ product.stock > 0 ? `${product.stock} in stock` : 'Out of Stock' }}
+              </span>
+            </div>
           </div>
 
           <!-- Description -->
-          <div v-if="product.description" class="bg-gray-50 backdrop-blur-sm rounded-xl p-6 border border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900 mb-3">Description</h3>
-            <p class="text-gray-700 leading-relaxed">{{ product.description }}</p>
+          <div class="prose prose-slate prose-lg text-slate-600 mb-10 leading-relaxed">
+            <p>{{ product.description }}</p>
           </div>
 
-          <!-- Quantity & Add to Cart -->
-          <div v-if="product.stock > 0" class="space-y-6">
-            <div class="flex items-center justify-between">
-              <span class="text-lg font-semibold text-gray-900">Quantity</span>
-              <div class="flex items-center bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl overflow-hidden">
-                <button @click="decrementQty" class="px-4 py-3 hover:bg-gray-100 transition-colors duration-200 text-gray-700">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
-                  </svg>
-                </button>
-                <input type="number" v-model.number="qty" class="w-16 text-center bg-transparent border-none outline-none text-gray-900 font-semibold" min="1" :max="product.stock" />
-                <button @click="incrementQty" class="px-4 py-3 hover:bg-gray-100 transition-colors duration-200 text-gray-700">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H5.4"></path>
-                  </svg>
-                </button>
+          <!-- Actions Area -->
+          <div class="mt-auto pt-8 border-t border-slate-200">
+            <div v-if="product.stock > 0" class="space-y-6">
+              
+              <div class="flex flex-col sm:flex-row sm:items-center gap-6">
+                <!-- Quantity Selector -->
+                <div class="flex flex-col gap-2">
+                  <label class="text-sm font-semibold text-slate-700">Quantity</label>
+                  <div class="flex items-center bg-white border border-slate-300 rounded-xl overflow-hidden w-fit shadow-sm">
+                    <button 
+                      @click="decrementQty" 
+                      class="px-4 py-3 hover:bg-slate-50 text-slate-600 transition active:scale-95"
+                      :disabled="qty <= 1"
+                    >
+                      -
+                    </button>
+                    <input 
+                      type="number" 
+                      v-model.number="qty" 
+                      class="w-16 text-center border-none p-0 text-slate-900 font-bold focus:ring-0 bg-transparent" 
+                      readonly 
+                    />
+                    <button 
+                      @click="incrementQty" 
+                      class="px-4 py-3 hover:bg-slate-50 text-slate-600 transition active:scale-95"
+                      :disabled="qty >= product.stock"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Total Price Display (Optional) -->
+                <div class="hidden sm:flex flex-col gap-1">
+                   <label class="text-sm font-semibold text-slate-700">Total</label>
+                   <span class="text-2xl font-bold text-slate-900">
+                     ${{ (discountedPrice(product.price, product.discount) * qty).toFixed(2) }}
+                   </span>
+                </div>
               </div>
+
+              <!-- Add to Cart Button -->
+              <div class="flex flex-col gap-3">
+                <button 
+                  @click="addToCart" 
+                  class="w-full flex items-center justify-center space-x-3 px-8 py-5 bg-slate-900 text-white text-lg font-bold rounded-2xl hover:bg-blue-600 shadow-xl shadow-slate-900/10 hover:shadow-blue-600/20 transform hover:-translate-y-1 transition-all duration-300"
+                >
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                  <span>Add {{ qty }} to Cart</span>
+                  <span class="sm:hidden opacity-80 font-normal ml-2"> - ${{ (discountedPrice(product.price, product.discount) * qty).toFixed(2) }}</span>
+                </button>
+                <p class="text-center text-xs text-slate-400">Free shipping on orders over $100</p>
+              </div>
+
             </div>
 
-            <button @click="addToCart" class="w-full px-8 py-4 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-all duration-300 hover:shadow-lg">
-              Add {{ qty }} to Cart
-            </button>
-
-            <div class="text-center p-4 bg-gray-50 rounded-xl border border-gray-200">
-              <span class="text-sm text-gray-700">Total: </span>
-              <span class="text-xl font-bold text-gray-900">${{ (discountedPrice(product.price, product.discount) * qty).toFixed(2) }}</span>
+            <!-- Out of Stock State -->
+            <div v-else class="rounded-2xl bg-slate-100 p-6 text-center border border-slate-200">
+              <p class="text-slate-500 font-medium">This item is currently unavailable.</p>
+              <button class="mt-4 text-blue-600 font-semibold hover:underline">
+                Notify me when available
+              </button>
             </div>
-          </div>
-
-          <!-- Out of Stock -->
-          <div v-else class="mt-8 p-6 bg-red-50 border border-red-200 rounded-xl text-center">
-            <svg class="w-12 h-12 mx-auto mb-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <h3 class="text-lg font-semibold text-red-700 mb-2">Out of Stock</h3>
-            <p class="text-red-600">This product is currently unavailable. Please check back later.</p>
           </div>
         </div>
-      </div>
 
-      <!-- Placeholder if product not found -->
-      <div v-else class="flex items-center justify-center border-2 border-dashed border-slate-300 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 p-8 text-slate-500 text-center min-h-[380px] backdrop-blur-sm">
-        <p>Product not found</p>
       </div>
     </div>
+
+    <!-- Loading / Not Found State -->
+    <div v-else class="min-h-[60vh] flex flex-col items-center justify-center">
+      <div class="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4" v-if="loading"></div>
+      <div v-else class="text-center">
+         <h2 class="text-2xl font-bold text-slate-900">Product not found</h2>
+         <button @click="$router.push('/')" class="mt-4 text-blue-600 hover:underline">Return to Home</button>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -125,7 +180,6 @@
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useProductStore } from "@/store/useProductStore";
-import { useCategoryStore } from "@/store/useCategoryStore";
 import { usePromotionStore } from "@/store/usePromotionStore";
 import { useShoppingCartStore } from "@/store/useShoppingCartStore";
 import { useAuthStore } from "@/store/authStore";
@@ -133,69 +187,93 @@ import { useToast } from "vue-toastification";
 
 const route = useRoute();
 const productStore = useProductStore();
-const categoryStore = useCategoryStore();
 const promotionStore = usePromotionStore();
 const cartStore = useShoppingCartStore();
 const authStore = useAuthStore();
 const toast = useToast();
 
-const API_URL = import.meta.env.VITE_API_URL;
 const product = ref({});
 const qty = ref(1);
+const loading = ref(true);
 
-// Slugify helper
+// Slugify helper (must match the one used in the URL generation)
 const slugify = (text) =>
-  text.toString().toLowerCase().trim()
-      .replace(/\s+/g, "-")
-      .replace(/[^\w\-]+/g, "")
-      .replace(/\-\-+/g, "-");
+  (text ?? "")
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^\w\-]+/g, "")
+    .replace(/\-\-+/g, "-");
 
-// Fetch product & merge promotions
-onMounted(async () => {
-  await Promise.all([
-    categoryStore.fetchCategories(),
-    productStore.fetchProducts(),
-    promotionStore.fetchPromotions()
-  ]);
+// Fetch Logic
+const fetchProductBySlug = async () => {
+  loading.value = true;
+  try {
+    await Promise.all([
+      productStore.fetchProducts(),
+      promotionStore.fetchPromotions()
+    ]);
 
-  const slug = route.params.name;
+    const slug = route.params.name;
 
-  // Get product
-  const prod = productStore.products.find(p => slugify(p.product_name) === slug) || {};
+    // Find product matching the slug
+    const prod = productStore.products.find(p => slugify(p.name) === slug);
+    
+    if (!prod) {
+      product.value = {};
+      return;
+    }
 
-  // Merge promotions
-  const promos = promotionStore.promotions.filter(p =>
-    p.categories.some(cat => cat.id === prod.category_id)
-  );
+    // Determine Promotions
+    const promos = promotionStore.promotions.filter(p =>
+      p.categories.some(cat => String(cat._id) === String(prod.category_id._id))
+    );
 
-  product.value = {
-    ...prod,
-    promotions: promos,
-    discount: promos.length > 0 ? Math.max(...promos.map(p => p.discount_percentage)) : 0
-  };
-});
+    // Set Product Data with Calculated Discount
+    product.value = {
+      ...prod,
+      promotions: promos,
+      discount: promos.length > 0 ? Math.max(...promos.map(p => p.discount_percentage || 0)) : 0
+    };
 
-
-// Quantity controls
-const incrementQty = () => { if (qty.value < product.value.stock) qty.value++; };
-const decrementQty = () => { if (qty.value > 1) qty.value--; };
-
-// Discounted price
-const discountedPrice = (price, discount) => {
-  const disc = discount || 0;
-  return (price * (1 - disc / 100)).toFixed(2);
+  } catch (err) {
+    console.error("Failed to fetch product:", err);
+  } finally {
+    loading.value = false;
+  }
 };
 
-// Add to cart
+onMounted(() => fetchProductBySlug());
+
+// Logic
+const incrementQty = () => { 
+  if (qty.value < (product.value.stock || 1)) qty.value++; 
+};
+
+const decrementQty = () => { 
+  if (qty.value > 1) qty.value--; 
+};
+
+const discountedPrice = (price, discount) => {
+  const val = (Number(price) || 0) * (1 - (discount || 0)/100);
+  return val.toFixed(2);
+};
+
 const addToCart = async () => {
   if (!authStore.user) {
     toast.info("Please log in to add items to cart!", { position: "top-right" });
     return;
   }
-  if (!product.value.id) return;
+  if (!product.value._id) return;
+
   try {
-    await cartStore.addItem(product.value.id, qty.value);
-    toast.success(`${qty.value} item(s) added to cart!`, { position: "top-right" });
+    // Add logic here to prevent adding more than stock if cart already has items
+    await cartStore.addItem(product.value._id, qty.value);
+    toast.success(`${qty.value} ${qty.value > 1 ? 'items' : 'item'} added to cart!`, { 
+      position: "top-right",
+      timeout: 3000 
+    });
   } catch (err) {
     console.error(err);
     toast.error("Failed to add items to cart.", { position: "top-right" });

@@ -1,167 +1,91 @@
 <template>
-  <!-- Product Card -->
   <div
     v-if="product"
-    class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/90 to-blue-50/80 backdrop-blur-sm border border-white/20 shadow-lg hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-500 transform hover:-translate-y-2"
+    class="group relative flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-500"
   >
-    <!-- Product Image & Overlays -->
-    <div class="relative overflow-hidden rounded-t-2xl">
-      <router-link :to="`/product/${slugify(product.product_name)}`">
+    <!-- Image Container -->
+    <div class="relative overflow-hidden aspect-[4/5] sm:aspect-square bg-slate-100">
+      <router-link :to="`/product/${slugify(product.name)}`" class="block h-full w-full">
         <img
-          :src="product.product_image ? `${API_URL}/${product.product_image}` : '/placeholder.png'"
-          :alt="product.product_name"
-          class="w-full h-56 object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
+          :src="product.image_product || '/placeholder.png'"
+          :alt="product.name"
+          class="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
+          loading="lazy"
         />
       </router-link>
-
-      <!-- Promotion / Discount Badge -->
-      <div v-if="hasDiscount" class="absolute top-4 left-4">
-        <span class="px-2 py-1 text-xs font-bold rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-md">
-          -{{ discountPercentage }}%
-        </span>
+      
+      <!-- Badges -->
+      <div class="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1">
+         <span v-if="product.stock <= 5 && product.stock > 0" class="px-2 py-1 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-orange-700 bg-orange-100/90 backdrop-blur-sm rounded-md">
+           Low Stock
+         </span>
+         <span v-if="product.stock === 0" class="px-2 py-1 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white bg-slate-800/90 backdrop-blur-sm rounded-md">
+           Sold Out
+         </span>
       </div>
 
-      <!-- Favourite Button -->
-      <button
-        @click="toggleFavourite"
-        class="absolute top-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 backdrop-blur-md shadow-lg hover:bg-white hover:shadow-xl transition-all duration-300 transform hover:scale-110 border border-white/30"
-        :title="isFavourite ? 'Remove from favourites' : 'Add to favourites'"
-      >
-        <Heart
-          class="w-5 h-5 transition-all duration-300"
-          :class="isFavourite ? 'text-red-500 scale-110' : 'text-slate-600 group-hover:text-red-400'"
-          :fill="isFavourite ? 'currentColor' : 'none'"
-        />
-      </button>
-
-      <!-- Stock Badge -->
-      <div v-if="product.stock <= 0" class="absolute bottom-4 right-4 px-3 py-1 bg-red-500/90 backdrop-blur-sm text-white text-xs font-semibold rounded-full border border-red-400/30">
-        Out of Stock
-      </div>
-      <div v-else-if="product.stock <= 5" class="absolute bottom-4 right-4 px-3 py-1 bg-orange-500/90 backdrop-blur-sm text-white text-xs font-semibold rounded-full border border-orange-400/30">
-        Low Stock
+      <!-- Quick Action (Desktop Hover) -->
+      <div class="absolute inset-x-0 bottom-0 p-4 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 hidden sm:block">
+        <button class="w-full py-2.5 bg-white text-slate-900 font-semibold text-sm rounded-xl shadow-lg hover:bg-blue-600 hover:text-white transition-colors">
+          View Details
+        </button>
       </div>
     </div>
 
-    <!-- Product Content -->
-    <div class="relative flex flex-1 flex-col p-6 z-10">
-      <div class="flex-1">
+    <!-- Product Info -->
+    <!-- p-3 for mobile (tight fit), p-5 for desktop -->
+    <div class="flex flex-col flex-1 p-3 sm:p-5">
+      
+      <!-- Title -->
+      <div class="mb-1 sm:mb-2">
         <router-link
-          :to="`/product/${slugify(product.product_name)}`"
-          class="block text-lg font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent hover:from-blue-600 hover:to-cyan-600 transition-all duration-300 line-clamp-2 mb-2"
-          :title="product.product_name"
+          :to="`/product/${slugify(product.name)}`"
+          class="text-sm sm:text-lg font-bold text-slate-800 hover:text-blue-600 transition-colors line-clamp-2 leading-tight sm:leading-snug"
+          :title="product.name"
         >
-          {{ product.product_name || "Unknown Product" }}
+          {{ product.name || "Unknown Product" }}
         </router-link>
+      </div>
 
-        <p v-if="product.description" class="text-sm text-slate-600 line-clamp-2 mb-4">
-          {{ product.description }}
-        </p>
+      <!-- Description (Hidden on tiny mobile screens to save space) -->
+      <p class="text-xs sm:text-sm text-slate-500 line-clamp-2 mb-3 hidden xs:block">
+        {{ product.description }}
+      </p>
 
-        <div class="flex items-center justify-between">
-          <p class="text-2xl font-bold">
-            <span v-if="hasDiscount" class="text-gray-400 line-through mr-2">${{ Number(product.price ?? 0).toFixed(2) }}</span>
-            <span class="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent font-bold">${{ discountedPrice }}</span>
-          </p>
-          <div class="flex items-center space-x-1">
-            <div
-              class="w-2 h-2 rounded-full"
-              :class="product.stock > 5 ? 'bg-green-500' : product.stock > 0 ? 'bg-orange-500' : 'bg-red-500'"
-            ></div>
-            <span class="text-xs text-slate-500 font-medium">
-              {{ product.stock > 0 ? `${product.stock} left` : "Sold out" }}
-            </span>
-          </div>
+      <!-- Price & Action Bottom -->
+      <div class="mt-auto pt-2 flex items-end justify-between border-t border-slate-50 sm:border-none">
+        <div class="flex flex-col">
+          <span class="text-[10px] sm:text-xs text-slate-400 font-medium">Price</span>
+          <span class="text-base sm:text-xl font-extrabold text-slate-900">
+            ${{ Number(product.price ?? 0).toFixed(2) }}
+          </span>
+        </div>
+        
+        <!-- Mobile "Add" Icon / Status Dot -->
+        <div class="sm:hidden">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 text-slate-600">
+               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Placeholder -->
-  <div v-else class="flex items-center justify-center border-2 border-dashed border-slate-300 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 p-8 text-slate-500 text-center min-h-[380px] backdrop-blur-sm">
-    <p>Product not found</p>
+  <!-- Fallback if prop missing -->
+  <div v-else class="h-full bg-slate-50 border border-dashed border-slate-300 rounded-2xl flex items-center justify-center p-6 text-slate-400 text-sm">
+    Product not available
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue";
-import { useToast } from "vue-toastification";
-import { Heart } from "lucide-vue-next";
-import { useFavouriteStore } from "@/store/useFavouriteStore";
-import { useAuthStore } from "@/store/authStore";
-
 const props = defineProps({
   product: { type: Object, required: false },
   API_URL: { type: String, required: true },
 });
 
-const product = props.product;
-const favStore = useFavouriteStore();
-const authStore = useAuthStore();
-const toast = useToast();
-
-// Fetch favourites if user is logged in
-onMounted(() => {
-  if (authStore.user && favStore.favourites.length === 0) {
-    favStore.fetchFavourites();
-  }
-});
-
-// Slugify function for URLs
 const slugify = (text) =>
-  text.toString().toLowerCase().trim().replace(/\s+/g, "-").replace(/[^\w\-]+/g, "").replace(/\-\-+/g, "-");
-
-// Favourite logic
-const isFavourite = computed(() => {
-  if (!product?.id) return false;
-  return favStore.favourites.some((f) => f.product_id === product.id);
-});
-
-const toggleFavourite = async () => {
-  if (!authStore.user) {
-    toast.info("Please log in to add to favourites!", { position: "top-right" });
-    return;
-  }
-
-  if (!product?.id) return;
-
-  const fav = favStore.favourites.find((f) => f.product_id === product.id);
-  if (fav) {
-    favStore.favourites = favStore.favourites.filter((f) => f.id !== fav.id);
-    try {
-      await favStore.removeFavourite(fav.id);
-      toast.success("Removed from favourites!");
-    } catch {
-      favStore.favourites.push(fav);
-      toast.error("Failed to remove favourite.");
-    }
-  } else {
-    const tempFav = { id: Date.now(), product_id: product.id, product };
-    favStore.favourites.push(tempFav);
-    try {
-      await favStore.addFavourite(product.id);
-      await favStore.fetchFavourites();
-      toast.success("Added to favourites!");
-    } catch {
-      favStore.favourites = favStore.favourites.filter((f) => f.id !== tempFav.id);
-      toast.error("Failed to add favourite.");
-    }
-  }
-};
-
-// Discount logic
-const hasDiscount = computed(() => {
-  return product?.discount > 0 || product?.promotions?.length > 0;
-});
-
-const discountPercentage = computed(() => {
-  if (product?.discount > 0) return product.discount;
-  if (product?.promotions?.length) return Math.max(...product.promotions.map(p => p.discount_percentage || 0));
-  return 0;
-});
-
-const discountedPrice = computed(() => {
-  const discount = discountPercentage.value || 0;
-  return (Number(product?.price ?? 0) * (1 - discount / 100)).toFixed(2);
-});
+  text?.toString().toLowerCase().trim()
+      .replace(/\s+/g, "-")
+      .replace(/[^\w\-]+/g, "")
+      .replace(/\-\-+/g, "-") || "";
 </script>

@@ -41,7 +41,7 @@ export const useCategoryStore = defineStore("category", {
         const formData = new FormData();
         formData.append("name", name);
         // fix
-        if (file) formData.append("image", file);
+        if (file) formData.append("category_image", file);
 
         const res = await api.post("/categories/", formData, {
           headers: { "Content-Type": "multipart/form-data" },
