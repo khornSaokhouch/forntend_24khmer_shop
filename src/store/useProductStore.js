@@ -1,38 +1,28 @@
 import { defineStore } from "pinia";
 import api from "../services/api.js";
+import { useFavouriteStore } from "./useFavouriteStore";
 
 export const useProductStore = defineStore("product", {
   state: () => ({
     products: [],
     loading: false,
     error: "",
-    productDetail: null, // added state for single product
+    productDetail: null,
   }),
 
   actions: {
     async fetchProducts() {
       this.loading = true;
       this.error = "";
+      const favouriteStore = useFavouriteStore();
+
       try {
         const res = await api.get("/products/");
-        this.products = (res.data || []).map(p => ({
-          ...p,
-          price: Number(p.price ?? 0),
-          stock: Number(p.stock ?? 0),
-        }));
-      } catch (err) {
-        this.error = err.response?.data?.message || "Failed to fetch products";
-      } finally {
-        this.loading = false;
-      }
-    },
+        const rawProducts = res.data || [];
 
-    async fetchProductsByUser(userId) {
-      this.loading = true;
-      this.error = "";
-      try {
-        const res = await api.get(`/products/user/${userId}`);
-        this.products = (res.data || []).map(p => ({
+        await favouriteStore.fetchFavourites();
+
+        this.products = rawProducts.map(p => ({
           ...p,
           price: Number(p.price ?? 0),
           stock: Number(p.stock ?? 0),
@@ -54,7 +44,6 @@ export const useProductStore = defineStore("product", {
           price: Number(res.data.price ?? 0),
           stock: Number(res.data.stock ?? 0),
         };
-        console.log("Product fetched:", this.productDetail);
       } catch (err) {
         this.error = err.response?.data?.message || "Failed to fetch product";
         this.productDetail = null;
@@ -62,7 +51,6 @@ export const useProductStore = defineStore("product", {
         this.loading = false;
       }
     },
-
     async createProduct(productData, file) {
       this.loading = true;
       this.error = "";

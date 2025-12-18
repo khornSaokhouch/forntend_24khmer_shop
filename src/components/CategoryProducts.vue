@@ -1,39 +1,76 @@
 <template>
-  <div class="p-6 max-w-8xl mx-auto">
-    <button
-      @click="$router.back()"
-      class="mb-6 px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-    >
-      ← Back
-    </button>
+  <div class="min-h-screen relative">
 
-    <h1 class="text-3xl md:text-4xl font-bold mb-6 text-center bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-      {{ categoryName }} Products
-    </h1>
+    <!-- Navigation / Header -->
+    <div class="relative sticky top-0 z-30 backdrop-blur-md border-b border-slate-200/60 shadow-sm transition-all">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+        
+        <!-- Back Button (Styled) -->
+        <button
+          @click="$router.back()"
+          class="group flex items-center justify-center w-10 h-10 rounded-full bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-300 hover:text-blue-600 transition-all"
+          title="Go Back"
+        >
+          <svg class="w-5 h-5 text-slate-500 group-hover:text-blue-600 transition-transform group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+        </button>
 
-    <!-- Loading -->
-    <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      <div v-for="n in 8" :key="n" class="border rounded-xl shadow-sm p-4 space-y-4">
-        <div class="w-full h-48 rounded-lg bg-slate-200 animate-pulse"></div>
-        <div class="h-4 w-3/4 rounded bg-slate-200 animate-pulse"></div>
-        <div class="h-4 w-1/2 rounded bg-slate-200 animate-pulse"></div>
+        <!-- Page Title -->
+        <h1 class="text-lg sm:text-2xl font-bold text-slate-800 capitalize truncate max-w-[200px] sm:max-w-md text-center">
+          {{ categoryName }}
+        </h1>
+        
+        <!-- Empty Div to balance flex (keeps title centered) -->
+        <div class="w-10"></div>
       </div>
     </div>
 
-    <!-- Products Grid -->
-    <div v-else-if="filteredProducts.length" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      <ProductCard
-        v-for="product in filteredProducts"
-        :key="product.id"
-        :product="product"
-        :API_URL="API_URL"
-      />
-    </div>
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      
+      <!-- Description / Hero Text -->
+      <div v-if="!loading && currentCategory" class="text-center mb-10">
+        <p class="text-slate-500 max-w-2xl mx-auto">
+          Browse our exclusive collection of <span class="font-semibold text-blue-600">{{ categoryName }}</span>.
+        </p>
+      </div>
 
-    <!-- Empty State -->
-    <p v-else class="text-gray-600 text-center py-16">
-      No products found for this category.
-    </p>
+      <!-- Loading State -->
+      <div v-if="loading" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-8">
+        <div v-for="n in 8" :key="n" class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm h-80 animate-pulse">
+           <div class="w-full h-48 rounded-xl bg-slate-200 mb-4"></div>
+           <div class="h-4 w-3/4 rounded bg-slate-200 mb-2"></div>
+           <div class="h-4 w-1/2 rounded bg-slate-200"></div>
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      <div 
+        v-else-if="filteredProducts.length" 
+        class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-8"
+      >
+        <ProductCard
+          v-for="product in filteredProducts"
+          :key="product._id"
+          :product="product"
+        />
+      </div>
+
+      <!-- Empty State -->
+      <div v-else class="flex flex-col items-center justify-center py-20 text-center">
+        <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm mb-4">
+          <svg class="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 12H4m16 0-4-4m4 4-4 4"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-slate-900">No Products Found</h3>
+        <p class="text-slate-500 mt-2">We couldn't find any items in this category.</p>
+        <router-link to="/" class="mt-6 px-6 py-2.5 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/30">
+          Go Home
+        </router-link>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -48,14 +85,10 @@ const route = useRoute();
 const productStore = useProductStore();
 const categoryStore = useCategoryStore();
 
-const API_URL = import.meta.env.VITE_API_URL;
 const loading = ref(true);
 
-function slugify(text) {
-  return text.toLowerCase().replace(/\s+/g, "-");
-}
+const slugify = (text) => text?.toLowerCase().replace(/\s+/g, "-") || "";
 
-// Load products and categories
 onMounted(async () => {
   loading.value = true;
   try {
@@ -67,20 +100,35 @@ onMounted(async () => {
   }
 });
 
-// Current category based on slug
+
+// 1. Find the current category object based on the URL Slug
 const currentCategory = computed(() => {
+  const slug = route.params.name;
   return categoryStore.categories.find(
-    (c) => slugify(c.name) === route.params.name
+    (c) => slugify(c.name) === slug
   );
 });
 
-// Filtered products by category
+// 2. Filter products safely (Handling MongoDB _id and String/Number mismatch)
 const filteredProducts = computed(() => {
-  if (!currentCategory.value) return [];
-  return productStore.products.filter(
-    (p) => Number(p.category_id) === Number(currentCategory.value.id)
-  );
+  const category = currentCategory.value;
+  if (!category) return [];
+
+  return productStore.products.filter((p) => {
+    // Product's category ID
+    const productCatId = typeof p.category_id === 'object'
+      ? (p.category_id._id || p.category_id.id)
+      : p.category_id;
+
+    // Category ID from store
+    const categoryId = category.id;
+
+    // Compare as strings
+    return String(productCatId) === String(categoryId);
+  });
 });
+
+
 
 const categoryName = computed(() => currentCategory.value?.name || "Category");
 </script>

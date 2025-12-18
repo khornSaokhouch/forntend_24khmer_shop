@@ -1,66 +1,58 @@
 <template>
-  <div class="relative min-h-screen overflow-hidden">
-    <!-- Main content -->
-    <div class="relative z-10">
+  <div class="relative min-h-screen overflow-x-hidden">
+    
+
+    <!-- Main Content -->
+    <main class="relative z-10 flex flex-col gap-12 md:gap-20 pb-20">
 
       <!-- Banner Section -->
-      <div
+      <section
         ref="bannerSection"
-        class="transition-all duration-700 ease-out"
-        :class="isBannerVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'"
+        class="transition-all duration-1000 ease-out transform"
+        :class="isBannerVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-95'"
       >
         <BannerSwiper />
-      </div>
+      </section>
 
       <!-- Category Section -->
-      <div
+      <section
         ref="categorySection"
-        class="transition-all duration-700 ease-out delay-100"
+        class="transition-all duration-1000 ease-out delay-100 transform"
         :class="isCategoryVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'"
       >
-        <Category />
-      </div>
+        <CategoryList />
+      </section>
 
       <!-- Product List Section -->
-      <div
+      <section
         ref="productListSection"
-        class="transition-all duration-700 ease-out delay-200"
+        class="transition-all duration-1000 ease-out delay-200 transform"
         :class="isProductListVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'"
       > 
         <ProductListPage />
-      </div>
+      </section>
 
-      <!-- Optional Promotion Section (add if needed) -->
-      <div
-        ref="promotionSection"
-        class="transition-all duration-700 ease-out delay-300"
-        :class="isPromotionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'"
-      >
-        <!-- Promotion component goes here if any -->
-      </div>
-
-    </div>
+    </main>
   </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
 import { useIntersectionObserver } from "@vueuse/core";
-import Category from "../components/CategoryList.vue";
-import BannerSwiper from "../components/BannerSwiper.vue";
-import ProductListPage from "../components/ProductListPage.vue";
+// Ensure these paths match your actual folder structure
+import CategoryList from "@/components/CategoryList.vue"; // Assuming this is the scrolling list component
+import BannerSwiper from "@/components/BannerSwiper.vue";
+import ProductListPage from "@/components/ProductListPage.vue"; // Assuming this is your product grid
 
 // Section refs
 const bannerSection = ref(null);
 const categorySection = ref(null);
 const productListSection = ref(null);
-const promotionSection = ref(null);
 
 // Visibility states
 const isBannerVisible = ref(false);
 const isCategoryVisible = ref(false);
 const isProductListVisible = ref(false);
-const isPromotionVisible = ref(false);
 
 // Intersection observer helper
 const createObserver = (target, isVisible) => {
@@ -69,10 +61,10 @@ const createObserver = (target, isVisible) => {
     ([{ isIntersecting }]) => {
       if (isIntersecting) {
         isVisible.value = true;
-        stop(); // stop observing after first visibility
+        stop(); // Only animate once
       }
     },
-    { threshold: 0.1 }
+    { threshold: 0.1 } // Trigger when 10% visible
   );
 };
 
@@ -80,16 +72,4 @@ const createObserver = (target, isVisible) => {
 createObserver(bannerSection, isBannerVisible);
 createObserver(categorySection, isCategoryVisible);
 createObserver(productListSection, isProductListVisible);
-createObserver(promotionSection, isPromotionVisible);
 </script>
-
-<style scoped>
-@keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(3deg); }
-}
-
-.float-animation {
-  animation: float 8s ease-in-out infinite;
-}
-</style>

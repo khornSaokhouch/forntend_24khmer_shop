@@ -3,40 +3,34 @@ import api from "../services/api.js";
 import { useAuthStore } from "./authStore";
 
 export const useFavouriteStore = defineStore("favourite", {
-  id: "favourite",
   state: () => ({
-    favourites: [], // store {id, product_id, product}
+    favourites: [],
     loading: false,
     error: "",
   }),
 
   actions: {
+    // Helper to get the ID string regardless of whether product_id is populated or not
+    getProductId(favoriteItem) {
+      if (!favoriteItem || !favoriteItem.product_id) return null;
+      // If product_id is an object (populated), return its _id. Otherwise return the string.
+      return typeof favoriteItem.product_id === "object"
+        ? favoriteItem.product_id._id
+        : favoriteItem.product_id;
+    },
+
     async fetchFavourites() {
       const authStore = useAuthStore();
       if (!authStore.user) return;
 
       this.loading = true;
-      this.error = "";
       try {
-        const res = await api.get("/favourites/", {
+        const res = await api.get("/favorites", {
           headers: { Authorization: `Bearer ${authStore.token}` },
         });
-
-        // Map favourites and fetch product data
-        const favouritesWithProducts = await Promise.all(
-          res.data.map(async fav => {
-            try {
-              const productRes = await api.get(`/products/${fav.product_id}`);
-              return { ...fav, product: productRes.data };
-            } catch {
-              return { ...fav, product: null };
-            }
-          })
-        );
-
-        this.favourites = favouritesWithProducts;
+        this.favourites = res.data;
       } catch (err) {
-        this.error = err.response?.data?.detail || "Failed to fetch favourites";
+        this.error = err.response?.data?.message || "Failed to fetch favourites";
       } finally {
         this.loading = false;
       }
@@ -46,29 +40,24 @@ export const useFavouriteStore = defineStore("favourite", {
       const authStore = useAuthStore();
       if (!authStore.user) return null;
 
+      // Optimistic update (optional: makes UI feel faster)
+      // You can implement this if you want instant feedback before API responds
+
       this.loading = true;
-      this.error = "";
       try {
-        const formData = new FormData();
-        formData.append("product_id", product_id);
-
-        const res = await api.post("/favourites/", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${authStore.token}`,
-          },
-        });
-
-        // fetch product data immediately
-        const productRes = await api.get(`/products/${product_id}`);
-        this.favourites.push({ ...res.data, product: productRes.data });
-
-        return res.data;
+        const res = await api.post(
+          "/favorites",
+          { product_id },
+          { headers: { Authorization: `Bearer ${authStore.token}` } }
+        );
+        // Add the new favorite to the list
+        this.favourites.push(res.data.favorite);
+        return res.data.favorite;
       } catch (err) {
-        if (err.response?.data?.detail === "Already added to favourites") {
-          await this.fetchFavourites(); // sync state
+        if (err.response?.data?.message === "Product already in favorites") {
+          await this.fetchFavourites(); // Sync if out of date
         } else {
-          this.error = err.response?.data?.detail || "Failed to add favourite";
+          this.error = err.response?.data?.message || "Failed to add favourite";
         }
         return null;
       } finally {
@@ -81,17 +70,39 @@ export const useFavouriteStore = defineStore("favourite", {
       if (!authStore.user) return;
 
       this.loading = true;
-      this.error = "";
       try {
-        await api.delete(`/favourites/${fav_id}`, {
+        await api.delete(`/favorites/${fav_id}`, {
           headers: { Authorization: `Bearer ${authStore.token}` },
         });
-        this.favourites = this.favourites.filter(f => f.id !== fav_id);
+        // Filter out the removed item
+        this.favourites = this.favourites.filter((f) => {
+            // Handle both _id (MongoDB default) and id (Virtuals)
+            const id = f._id || f.id; 
+            return id !== fav_id;
+        });
       } catch (err) {
-        this.error = err.response?.data?.detail || "Failed to remove favourite";
+        this.error = err.response?.data?.message || "Failed to remove favourite";
       } finally {
         this.loading = false;
       }
+    },
+
+    async toggleFavourite(product) {
+      // Use the helper to find the favorite
+      const fav = this.favourites.find((f) => this.getProductId(f) === product._id);
+      
+      if (fav) {
+        // Handle _id vs id
+        await this.removeFavourite(fav._id || fav.id);
+      } else {
+        await this.addFavourite(product._id);
+      }
+    },
+
+    isFavourite(product) {
+      if (!product || !product._id) return false;
+      // Use the helper to compare IDs safely
+      return this.favourites.some((f) => this.getProductId(f) === product._id);
     },
   },
 });

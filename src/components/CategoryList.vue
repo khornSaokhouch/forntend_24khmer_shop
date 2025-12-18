@@ -1,51 +1,57 @@
 <template>
   <div 
     ref="sectionTarget"
-    class="p-2 transition-opacity duration-1000 ease-out"
-    :class="isSectionVisible ? 'opacity-100' : 'opacity-0'"
+    class="w-full py-12 bg-white relative"
   >
-    <div class="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8">
-
-      <div class="text-center mb-12 lg:mb-16">
-        <h2 
-          class="text-3xl sm:text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent transition-all duration-700 ease-out"
-          :class="isSectionVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-90'"
-        >
-          Shop by Category
-        </h2>
-
-        <p 
-          class="mt-3 text-base sm:text-lg text-slate-600 max-w-2xl mx-auto transition-all duration-700 ease-out delay-200"
-          :class="isSectionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
-        >
-          Explore our hand-picked collections and find your favorite products.
-        </p>
-      </div>
-
-      <div v-if="loading" class="flex space-x-4 overflow-x-auto -mx-4 px-4 py-4">
-        <div v-for="n in 6" :key="n" class="w-24 h-24 rounded-full bg-slate-200 animate-pulse flex-shrink-0"></div>
-      </div>
-
-      <div v-else-if="error" class="text-center py-12 px-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-blue-100 shadow-lg shadow-blue-500/10">
-        Failed to load categories.
-      </div>
-
-      <div v-else-if="categories.length" class="overflow-x-auto px-2 sm:px-4 scrollbar-hide">
-        <div class="flex space-x-3 sm:space-x-4">
-          <CategoryCard
-            v-for="(category, index) in categories"
-            :key="category.id"
-            :category="category"
-            :API_URL="API_URL"
-            class="transition-all duration-500 ease-out"
-            :class="isSectionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'"
-            :style="{ transitionDelay: `${200 + index * 100}ms` }"
-          />
+    <div 
+      class="container mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-1000"
+      :class="isSectionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'"
+    >
+      
+      <!-- Header -->
+      <div class="flex items-end justify-between mb-8">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Shop by <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">Category</span>
+          </h2>
+        </div>
+        <!-- Scroll Indicators (Desktop) -->
+        <div class="hidden md:flex gap-2">
+           <span class="text-xs font-semibold text-slate-400 uppercase tracking-widest">Scroll to explore</span>
         </div>
       </div>
 
-      <div v-else class="text-center py-16 text-slate-500 bg-white/50 backdrop-blur-sm rounded-2xl border border-blue-100">
-        No categories found.
+      <!-- Loading State -->
+      <div v-if="loading" class="flex space-x-6 overflow-hidden px-2 py-4">
+        <div v-for="n in 6" :key="n" class="flex flex-col items-center space-y-3">
+          <div class="w-24 h-24 rounded-full bg-slate-100 animate-pulse"></div>
+          <div class="w-16 h-3 rounded bg-slate-100 animate-pulse"></div>
+        </div>
+      </div>
+
+      <!-- Error State -->
+      <div v-else-if="error" class="text-center py-8 bg-red-50 rounded-xl text-red-500 text-sm">
+        {{ error }}
+      </div>
+
+      <!-- Categories List -->
+      <div v-else-if="categories.length" class="relative group">
+        
+        <!-- Gradient Masks for Scroll Hinting -->
+        <div class="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none md:hidden"></div>
+        <div class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none md:hidden"></div>
+
+        <!-- Scroll Container -->
+        <div class="flex overflow-x-auto gap-4 sm:gap-8 pb-6 px-1 scrollbar-hide snap-x">
+          <CategoryCard
+            v-for="(category, index) in categories"
+            :key="category._id || category.id"
+            :category="category"
+            :API_URL="API_URL"
+            class="snap-start"
+            :style="{ animationDelay: `${index * 100}ms` }"
+          />
+        </div>
       </div>
 
     </div>
@@ -62,8 +68,8 @@ const store = useCategoryStore();
 const error = ref("");
 const loading = ref(true);
 const API_URL = import.meta.env.VITE_API_URL;
-const categories = computed(() => store.categories);
 
+const categories = computed(() => store.categories);
 const sectionTarget = ref(null);
 const isSectionVisible = ref(false);
 
@@ -75,17 +81,29 @@ const { stop } = useIntersectionObserver(
       stop();
     }
   },
-  { threshold: 0.15 }
+  { threshold: 0.2 }
 );
 
 onMounted(async () => {
   loading.value = true;
-  error.value = "";
   try {
     await store.fetchCategories();
-  } catch {
-    error.value = "Failed to fetch categories";
+  } catch (err) {
+    error.value = "Unable to load categories";
+  } finally {
+    loading.value = false;
   }
-  loading.value = false;
 });
 </script>
+
+<style scoped>
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+</style>
