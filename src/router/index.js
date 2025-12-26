@@ -79,7 +79,7 @@ const routes = [
       { path: "cart", component: CartList },
       { path: "category/:name", name: "category-products", component: () => import("@/components/CategoryProducts.vue") },
       { path: "product/:name", component: () => import("@/components/ProductDetailsPage.vue"), props: true },
-      { path: "event/:title", name: "EventDetails", component: () => import("@/components/EventDetailsPage.vue"), props: true },
+      { path: "events/:slug", name: "EventDetails", component: () => import("@/components/EventDetailsPage.vue"), props: true },
     ],
   },
 

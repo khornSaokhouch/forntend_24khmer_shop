@@ -3,7 +3,7 @@
     
 
     <!-- Main Content -->
-    <main class="relative z-10 flex flex-col gap-12 md:gap-20 pb-20">
+    <main class="relative z-10 flex flex-col gap-12 md:gap-20 ">
 
       <!-- Banner Section -->
       <section

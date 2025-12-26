@@ -1,5 +1,5 @@
 <template>
-  <div ref="sectionTarget" class="relative w-full py-12 md:py-24 ">
+  <div ref="sectionTarget" class="relative w-full pb-5 ">
     <div
       class="container mx-auto px-4 sm:px-6 lg:px-8 transition-opacity duration-1000"
       :class="isSectionVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'"

@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full pt-4 pb-6 relative group">
+  <div class="w-full pt-4 relative group">
     <!-- 1. Loading State -->
     <div v-if="eventStore.loading" class="px-4 w-full">
       <div
@@ -39,75 +39,59 @@
         class="w-full px-2 md:px-0"
         dir="rtl"
       >
-        <swiper-slide
-          v-for="event in featuredEvents"
-          :key="event._id"
-          class="transition-all duration-500"
-        >
-          <!-- Card Container -->
-          <div
-            class="relative w-full h-[200px] md:h-[400px] rounded-[2rem] overflow-hidden shadow-xl shadow-indigo-900/30 bg-slate-900 isolate group hover:shadow-2xl transition-shadow duration-500"
-          >
-            <!-- Image with smooth zoom on hover -->
-            <div class="absolute inset-0 overflow-hidden">
-              <img
-                :src="getEventImage(event.event_image)"
-                :alt="event.name"
-                class="w-full h-full object-cover transform transition-transform duration-[2000ms] ease-linear group-hover:scale-105"
-              />
-            </div>
+     <swiper-slide
+  v-for="event in featuredEvents"
+  :key="event._id"
+>
+  <!-- Wrap entire card in router-link for navigation -->
+  <router-link
+    :to="`/events/${slugify(event.name)}`"
+    class="relative w-full h-[200px] md:h-[400px] rounded-[2rem] overflow-hidden shadow-xl shadow-indigo-900/30 bg-slate-900 isolate group hover:shadow-2xl transition-shadow duration-500 block"
+  >
+    <!-- Image with hover zoom -->
+    <div class="absolute inset-0 overflow-hidden">
+      <img
+        :src="getEventImage(event.event_image)"
+        :alt="event.name"
+        class="w-full h-full object-cover transform transition-transform duration-[2000ms] ease-linear group-hover:scale-105"
+      />
+    </div>
 
-            <!-- Gradient Overlay for readability -->
-            <div
-              class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent z-10"
-            ></div>
+    <!-- Gradient overlay -->
+    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent z-10"></div>
 
-            <!-- Date Badge -->
-            <div class="absolute top-4 right-4 z-20">
-              <div
-                class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-4 py-2 text-center shadow-lg"
-              >
-                <div
-                  class="text-[10px] font-bold text-indigo-300 uppercase tracking-widest"
-                >
-                  {{ getMonth(event.start_date) }}
-                </div>
-                <div
-                  class="text-2xl font-black text-white leading-none tracking-tight"
-                >
-                  {{ getDay(event.start_date) }}
-                </div>
-              </div>
-            </div>
+    <!-- Date Badge -->
+    <div class="absolute top-4 right-4 z-20">
+      <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-4 py-2 text-center shadow-lg">
+        <div class="text-[10px] font-bold text-indigo-300 uppercase tracking-widest">
+          {{ getMonth(event.start_date) }}
+        </div>
+        <div class="text-2xl font-black text-white leading-none tracking-tight">
+          {{ getDay(event.start_date) }}
+        </div>
+      </div>
+    </div>
 
-            <!-- Content: bottom-left -->
-            <div class="absolute bottom-4 left-4 z-20">
-              <div class="flex flex-col items-start gap-2 md:gap-3">
-                <!-- Featured Tag -->
-                <span
-                  class="inline-flex items-center px-3 py-1 md:px-4 md:py-2 rounded-full bg-indigo-600/90 backdrop-blur-sm text-white text-[10px] md:text-xs font-bold tracking-wider uppercase shadow-lg shadow-indigo-600/20 border border-white/10"
-                >
-                  Featured
-                </span>
+    <!-- Content -->
+    <div class="absolute bottom-4 left-4 z-20">
+      <div class="flex flex-col items-start gap-2 md:gap-3">
+        <span class="inline-flex items-center px-3 py-1 md:px-4 md:py-2 rounded-full bg-indigo-600/90 backdrop-blur-sm text-white text-[10px] md:text-xs font-bold tracking-wider uppercase shadow-lg shadow-indigo-600/20 border border-white/10">
+          Featured
+        </span>
 
-                <!-- Title -->
-                <h2
-                  class="text-lg md:text-2xl lg:text-3xl font-extrabold text-white leading-tight drop-shadow-lg line-clamp-2"
-                >
-                  {{ event.name }}
-                </h2>
+        <h2 class="text-lg md:text-2xl lg:text-3xl font-extrabold text-white leading-tight drop-shadow-lg line-clamp-2">
+          {{ event.name }}
+        </h2>
 
-                <!-- Time / Details -->
-                <div
-                  class="flex items-center gap-2 md:gap-3 text-indigo-100 text-xs md:text-sm font-medium bg-white/5 backdrop-blur-md px-2 py-1 md:px-3 md:py-1.5 rounded-lg border border-white/10 shadow-sm"
-                >
-                  <Clock class="w-3.5 h-3.5 md:w-4 md:h-4 text-indigo-400" />
-                  {{ getTime(event.start_date) }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </swiper-slide>
+        <div class="flex items-center gap-2 md:gap-3 text-indigo-100 text-xs md:text-sm font-medium bg-white/5 backdrop-blur-md px-2 py-1 md:px-3 md:py-1.5 rounded-lg border border-white/10 shadow-sm">
+          <Clock class="w-3.5 h-3.5 md:w-4 md:h-4 text-indigo-400" />
+          {{ getTime(event.start_date) }}
+        </div>
+      </div>
+    </div>
+  </router-link>
+</swiper-slide>
+
       </swiper>
     </div>
 
@@ -144,6 +128,9 @@ onMounted(() => {
 const featuredEvents = computed(() => eventStore.events.slice(0, 5));
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
+const slugify = (text) => text?.toLowerCase().replace(/\s+/g, "-") || "";
+
 
 const getEventImage = (path) =>
   path
