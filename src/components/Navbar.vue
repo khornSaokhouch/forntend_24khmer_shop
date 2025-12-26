@@ -33,29 +33,28 @@
           <!-- RIGHT: Utilities & Profile -->
           <div class="flex items-center gap-2 sm:gap-4">
             
-        <!-- Desktop Search -->
-<div class="hidden lg:block relative group">
-  <input 
-    v-model="searchQuery"
-    type="text" 
-    placeholder="Search products..." 
-    class="w-48 focus:w-64 transition-all duration-300 bg-slate-50 border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-indigo-500/20 text-slate-700"
-  />
-  <Search class="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5 pointer-events-none" />
+            <!-- Desktop Search -->
+            <div class="hidden lg:block relative group">
+              <input 
+                v-model="searchQuery"
+                type="text" 
+                placeholder="Search..." 
+                class="w-48 focus:w-64 transition-all duration-300 bg-slate-50 border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-indigo-500/20 text-slate-700"
+              />
+              <Search class="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5 pointer-events-none" />
 
-  <!-- Dropdown -->
-  <ul v-if="searchQuery && filteredProducts.length" class="absolute mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-lg z-50 max-h-60 overflow-auto">
-    <li 
-      v-for="product in filteredProducts" 
-      :key="product._id"
-      @click="goToProduct(product)"
-      class="px-4 py-2 cursor-pointer hover:bg-indigo-50"
-    >
-      {{ product.name }}
-    </li>
-  </ul>
-</div>
-
+              <!-- Dropdown -->
+              <ul v-if="searchQuery && filteredProducts.length" class="absolute mt-1 w-full bg-white border border-slate-200 rounded-xl shadow-lg z-50 max-h-60 overflow-auto">
+                <li 
+                  v-for="product in filteredProducts" 
+                  :key="product._id"
+                  @click="goToProduct(product)"
+                  class="px-4 py-2 cursor-pointer hover:bg-indigo-50 text-sm"
+                >
+                  {{ product.name }}
+                </li>
+              </ul>
+            </div>
 
             <!-- Mobile Search Toggle -->
             <button @click="isSearchOpen = !isSearchOpen" class="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-full">
@@ -77,7 +76,7 @@
             </div>
 
             <!-- Profile Dropdown / Login -->
-            <div class="pl-2 border-l border-slate-200 ml-2">
+            <div class="hidden md:block pl-2 border-l border-slate-200 ml-2">
               <template v-if="user">
                 <router-link to="/profile" class="flex items-center gap-2 group">
                   <div class="relative w-9 h-9 rounded-full overflow-hidden ring-2 ring-transparent group-hover:ring-indigo-500 transition-all bg-slate-200">
@@ -106,55 +105,91 @@
         </div>
       </div>
 
-     <!-- Mobile Search Overlay -->
-<div v-if="isSearchOpen" class="lg:hidden absolute top-full left-0 w-full bg-white p-4 shadow-xl border-b border-slate-100 animate-in slide-in-from-top-2">
-  <div class="relative">
-    <Search class="absolute left-4 top-3.5 w-5 h-5 text-indigo-500" />
-    <input 
-      type="text" 
-      placeholder="Search products..." 
-      v-model="searchQuery"
-      class="w-full bg-slate-50 text-slate-800 rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-      autofocus
-    />
-    <button @click="isSearchOpen = false" class="absolute right-3 top-3 p-1 text-slate-400">
-      <X class="w-5 h-5" />
-    </button>
+      <!-- Mobile Search Overlay -->
+      <div v-if="isSearchOpen" class="lg:hidden absolute top-full left-0 w-full bg-white p-4 shadow-xl border-b border-slate-100 animate-in slide-in-from-top-2">
+        <div class="relative">
+          <Search class="absolute left-4 top-3.5 w-5 h-5 text-indigo-500" />
+          <input 
+            type="text" 
+            placeholder="Search products..." 
+            v-model="searchQuery"
+            class="w-full bg-slate-50 text-slate-800 rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            autofocus
+          />
+          <button @click="isSearchOpen = false" class="absolute right-3 top-3 p-1 text-slate-400">
+            <X class="w-5 h-5" />
+          </button>
 
-    <!-- Dropdown -->
-    <ul
-      v-if="searchQuery && filteredProducts.length > 0"
-      class="absolute left-0 right-0 mt-1 max-h-64 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-lg z-50"
-    >
-      <li
-        v-for="product in filteredProducts"
-        :key="product._id"
-        class="px-4 py-2 hover:bg-indigo-50 cursor-pointer"
-        @mousedown.prevent="goToProduct(product)"
-      >
-        {{ product.name }}
-      </li>
-    </ul>
-
-    <!-- No results message -->
-    <div v-if="searchQuery && filteredProducts.length === 0" class="mt-2 text-sm text-slate-500">
-      No products found.
-    </div>
-  </div>
-</div>
-
+          <!-- Dropdown -->
+          <ul
+            v-if="searchQuery && filteredProducts.length > 0"
+            class="absolute left-0 right-0 mt-1 max-h-64 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-lg z-50"
+          >
+            <li
+              v-for="product in filteredProducts"
+              :key="product._id"
+              class="px-4 py-2 hover:bg-indigo-50 cursor-pointer border-b border-slate-50 last:border-none"
+              @mousedown.prevent="goToProduct(product)"
+            >
+              {{ product.name }}
+            </li>
+          </ul>
+          
+          <div v-if="searchQuery && filteredProducts.length === 0" class="mt-2 text-sm text-slate-500 text-center py-2">
+            No products found.
+          </div>
+        </div>
+      </div>
     </nav>
 
     <!-- ============================================== -->
-    <!-- MOBILE BOTTOM NAVIGATION -->
+    <!-- MOBILE BOTTOM NAVIGATION (UPDATED) -->
     <!-- ============================================== -->
     <div class="md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-xl border-t border-slate-200 pb-safe z-50">
-      <div class="flex justify-around items-center h-16 px-2">
-        <!-- Keep mobile nav unchanged -->
+      <div class="flex justify-around items-center h-16 px-1">
+        
+        <!-- 1. HOME -->
+        <router-link to="/" class="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-slate-600 transition-colors" active-class="text-indigo-600 font-medium">
+          <Home class="w-6 h-6" />
+          <span class="text-[10px]">Home</span>
+        </router-link>
+
+        <!-- 2. CATEGORIES -->
+        <router-link to="/categories" class="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-slate-600 transition-colors" active-class="text-indigo-600 font-medium">
+          <Grid class="w-6 h-6" />
+          <span class="text-[10px]">Category</span>
+        </router-link>
+
+        <!-- 3. CART (Center) -->
+        <router-link to="/cart" class="relative flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-slate-600 transition-colors" active-class="text-indigo-600 font-medium">
+          <div class="relative">
+            <ShoppingCart class="w-6 h-6" />
+            <span v-if="cartCount > 0" class="absolute -top-1.5 -right-2 h-4 w-4 bg-red-500 text-white text-[9px] font-bold flex items-center justify-center rounded-full border-2 border-white">
+              {{ cartCount }}
+            </span>
+          </div>
+          <span class="text-[10px]">Cart</span>
+        </router-link>
+
+        <!-- 4. FAVORITES -->
+        <router-link to="/favorites" class="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-slate-600 transition-colors" active-class="text-pink-500 font-medium">
+          <Heart class="w-6 h-6" />
+          <span class="text-[10px]">Love</span>
+        </router-link>
+
+        <!-- 5. PROFILE / LOGIN -->
+        <router-link :to="user ? '/profile' : '/login'" class="flex flex-col items-center justify-center w-full h-full space-y-1 text-slate-400 hover:text-slate-600 transition-colors" active-class="text-indigo-600 font-medium">
+          <User v-if="user" class="w-6 h-6" />
+          <LogIn v-else class="w-6 h-6" />
+          <span class="text-[10px]">{{ user ? 'Profile' : 'Login' }}</span>
+        </router-link>
+
       </div>
+      <!-- Safe area for iPhone home bar -->
       <div class="h-1 bg-transparent w-full"></div>
     </div>
     
+    <!-- Spacer to prevent content being hidden behind top/bottom bars -->
     <div class="h-16 md:h-20"></div>
   </div>
 </template>
@@ -165,14 +200,14 @@ import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "../store/authStore";
 import { useShoppingCartStore } from "../store/useShoppingCartStore";
 import { useProductStore } from '@/store/useProductStore';
-import { Search, ShoppingBag, Heart, ShoppingCart, ArrowRight, X, Home, Grid, User } from 'lucide-vue-next';
+// Added LogIn icon for the mobile menu
+import { Search, ShoppingBag, Heart, ShoppingCart, ArrowRight, X, Home, Grid, User, LogIn } from 'lucide-vue-next';
 
 const searchQuery = ref('');
 const isSearchFocused = ref(false);
 const isSearchOpen = ref(false);
 const productStore = useProductStore();
 const router = useRouter();
-
 
 // Filter products based on search query
 const filteredProducts = computed(() => {
@@ -182,20 +217,11 @@ const filteredProducts = computed(() => {
   );
 });
 
-
 // Navigate to product page when selecting
 const goToProduct = (product) => {
   router.push(`/product/${slugify(product.name)}`);
   searchQuery.value = '';
   isSearchOpen.value = false;
-};
-
-
-// Hide dropdown on blur (desktop)
-const onBlur = () => {
-  setTimeout(() => {
-    isSearchFocused.value = false;
-  }, 100);
 };
 
 // Navbar state
@@ -238,7 +264,6 @@ const slugify = (text) =>
       .replace(/[^\w\-]+/g, "")
       .replace(/\-\-+/g, "-");
 
-
 onMounted(() => initData());
 
 watch(() => cartStore.cart, updateCartCount, { deep: true });
@@ -247,6 +272,7 @@ watch(() => route.path, () => { isSearchOpen.value = false; });
 </script>
 
 <style scoped>
+/* Ensures bottom nav doesn't overlap on iPhone with swipe bar */
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom);
 }
