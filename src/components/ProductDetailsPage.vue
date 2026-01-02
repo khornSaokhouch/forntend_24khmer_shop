@@ -184,14 +184,14 @@ import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
 import { useProductStore } from "@/store/useProductStore";
 import { usePromotionStore } from "@/store/usePromotionStore";
-import { useShoppingCartStore } from "@/store/useShoppingCartStore";
+import { useCartStore } from "@/store/useCartStore";
 import { useAuthStore } from "@/store/authStore";
 
 const route = useRoute();
 const toast = useToast();
 const productStore = useProductStore();
 const promotionStore = usePromotionStore();
-const cartStore = useShoppingCartStore();
+const cartStore = useCartStore();
 const authStore = useAuthStore();
 
 const product = ref({});
@@ -222,9 +222,13 @@ const addToCart = async () => {
     toast.info("Please log in to shop!");
     return;
   }
+
   try {
-    await cartStore.addItem(product.value._id, qty.value);
-    toast.success("Added to cart!");
+    for (let i = 0; i < qty.value; i++) {
+      await cartStore.updateCartItem(product.value._id, "add");
+    }
+
+    toast.success(`${qty.value} item(s) added to cart!`);
   } catch (err) {
     toast.error("Failed to add to cart");
   }
